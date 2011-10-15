@@ -1,0 +1,6 @@
+[submodule "Assets/Plugins/iOS/facebook-ios-sdk"]
+	path = Assets/Plugins/iOS/facebook-ios-sdk
+	url = https://github.com/facebook/facebook-ios-sdk.git
+[submodule "Assets/Plugins/iOS/JSONKit"]
+	path = Assets/Plugins/iOS/JSONKit
+	url = https://github.com/johnezang/JSONKit.git
