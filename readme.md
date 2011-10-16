@@ -16,7 +16,7 @@ It’s rather empty right now, but it will grow with time.
 * Set it App Id in the script’s properties
 * Before compiling in XCode, replace “[YOUR APP ID]” with your Facebook app id in `Info.plist`
 
-Right now the Facebook module is kind of awkward.
+Right now the Facebook module is kind of awkward. Please note, that I am aware of this fact ;)
 You can call any of the below methods on the script instance which you can access
 by calling
 
@@ -38,4 +38,20 @@ by calling
   The integer is either `Facebook.REQUEST_SUCCESS` or `Facebook.REQUEST_FAIL`. The string contains the JSON formatted result or error.
 
 * `logout()`
+
+# ToDos
+* Get a proper callback infrastructure running. Using `UnitySendMessage()` is not really the nice way
+  to get data back to C#.
+
+# License
+Under [Creative Commons 3.0 BY-NC-SA][CC] this is for free.
+For 10€ you can get a commercial license. [Contact me][mailto:surma@asdf-systems.de].
+
+# Credit
+by Alexander Surma <surma@asdf-systems.de>
+[JSONKit] by johnezang
+
+
 [Unity]: http://www.unity3d.com
+[JSONKit]: https://github.com/johnezang/JSONKit
+[CC]: http://creativecommons.org/licenses/by-nc-sa/3.0/

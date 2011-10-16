@@ -3,24 +3,13 @@ using System.Runtime.InteropServices;
 using System;
 
 public class Facebook : MonoBehaviour {
+	public string AppId;
 	public delegate void LoginCallback(int result);
 	public delegate void RequestCallback(int result, string data);
-	private LoginCallback lcb;
-	private RequestCallback rcb;
-	public string AppId;
-
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static private void _init(string AppId);
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static private void _authorize(int permissions);
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static private void _logout();
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static private void _graphRequest(string methodname, string[] param, string method);
-	[System.Runtime.InteropServices.DllImport("__Internal")]
-	extern static private void _deleteSession();
 
 	private static Facebook instance = null;
+	private LoginCallback lcb;
+	private RequestCallback rcb;
 
 	public enum Permission {
 		PUBLISH_STREAM = 0,
@@ -99,4 +88,22 @@ public class Facebook : MonoBehaviour {
 		rcb(REQUEST_SUCCESS, data);
 	}
 
+	#if UNITY_EDITOR
+		private static void _init(string AppId) {}
+		private static void _authorize(int permissions) {getInstance().loggedOut();}
+		private static void _logout() {getInstance().loggedOut();}
+		private static void _graphRequest(string methodname, string[] param, string method) {getInstance().requestFailed("Not implemented");}
+		private static void _deleteSession() {}
+	#elif UNITY_IPHONE
+		[System.Runtime.InteropServices.DllImport("__Internal")]
+		extern static private void _init(string AppId);
+		[System.Runtime.InteropServices.DllImport("__Internal")]
+		extern static private void _authorize(int permissions);
+		[System.Runtime.InteropServices.DllImport("__Internal")]
+		extern static private void _logout();
+		[System.Runtime.InteropServices.DllImport("__Internal")]
+		extern static private void _graphRequest(string methodname, string[] param, string method);
+		[System.Runtime.InteropServices.DllImport("__Internal")]
+		extern static private void _deleteSession();
+	#endif
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class Menu : MonoBehaviour {
-	private string logdata;
+	private string logdata = "";
 	public void Awake() {
 	}
 
