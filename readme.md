@@ -1,4 +1,4 @@
-# asdfunity v0.1.1
+# asdfunity v0.1.2
 [Unity] still has a lot of shortcomings. This library is supposed to make life easier
 when developing Unity applications - especially mobile ones.
 
