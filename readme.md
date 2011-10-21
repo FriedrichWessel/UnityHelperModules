@@ -1,4 +1,4 @@
-# asdfunity v0.1
+# asdfunity v0.1.2
 [Unity] still has a lot of shortcomings. This library is supposed to make life easier
 when developing Unity applications - especially mobile ones.
 
@@ -7,14 +7,18 @@ It’s rather empty right now, but it will grow with time.
 # Usage
 
 ## Installation
-* Initialize the submodules (*insert command here*)
+* Initialize the submodules
+
+        $ git submodule init
+        $ git submodule update
+
 * From the `Asset` folder copy `Plugins`, `Scripts` and `Editor` to your Unity project
 
 ## Facebook module
 * Create a new, empty Object in Unity’s inspector and name it “Facebook”
 * Attach the Facebook script to it
 * Set it App Id in the script’s properties
-* Before compiling in XCode, replace “[YOUR APP ID]” with your Facebook app id in `Info.plist`
+* Before compiling in XCode, replace “[YOUR APP ID]” with your Facebook app id in `Info.plist` inside the `URL Types` key
 
 Right now the Facebook module is kind of awkward. Please note, that I am aware of this fact ;)
 You can call any of the below methods on the script instance which you can access
