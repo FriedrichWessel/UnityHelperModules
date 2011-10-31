@@ -13,7 +13,7 @@ public class Screen : MonoBehaviour {
 		
 	}
 	
-	private void OnClick(object sender, ClickEventArgs e){
+	private void OnClick(object sender, MouseEventArgs e){
 		
 	}
 }

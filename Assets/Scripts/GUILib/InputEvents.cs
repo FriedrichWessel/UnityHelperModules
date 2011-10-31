@@ -2,34 +2,97 @@ using UnityEngine;
 using System.Collections;
 using System;
 
-public class InputEvents  {
+public class InputEvents : MonoBehaviour{
 
 	
-	private static InputEvents instance;
-
-	private InputEvents(){
+	public static InputEvents Instance;
+	
+	public event EventHandler<MouseEventArgs> ClickEvent;
+	
+	private Timer clickTimer;
+	private bool clickStarted = false;
+	
+	void Awake(){
+		Instance = this;
+		clickTimer = new Timer();
+		clickTimer.TimerFinished += OnClickTimerFinished;
 	}
 	
-	public static InputEvents Instance
-	{
-		get{
-			if (instance == null){
-			instance = new InputEvents();
+	void Update(){
+		checkTouches();
+		checkClick();
+		
+		
+	}
+	
+	private void checkClick(){
+		if(Input.touches.Length > 0)
+			return;
+		if(Input.GetMouseButtonDown(0)){
+			clickStart(0);
+		} else if(Input.GetMouseButtonUp(0)){
+			clickEnd(0);
+		}
+	}
+	
+	private void checkTouches(){
+		Touch[] touches = Input.touches;
+		if(touches.Length > 0 ){
+			foreach(Touch touch in touches){
+				if(touch.phase == TouchPhase.Began){
+					clickStart(touch.fingerId);
+				} else if(touch.phase == TouchPhase.Ended){
+					clickEnd(touch.fingerId);
+				}
+				
+					
 			}
-			return instance;
+		}
+	}
+	
+	private void clickStart(int buttonId){
+		InvokeDownEvent(buttonId);
+		clickTimer.StartTimer(0.001f);
+		clickStarted = true;
+	}
+	
+	private void clickEnd(int buttonId){
+		InvokeUpEvent(buttonId);
+		if(clickStarted){
+			InvokeClickEvent(buttonId);
+			clickStarted = false;
 		}
 	}
 	
 	
-	public event EventHandler<ClickEventArgs> ClickEvent;
+	private void OnClickTimerFinished(object sender, EventArgs e){
+		clickStarted = false;
+	}
 	
-	private void InvokeClickEvent(){
+	private void InvokeClickEvent(int buttonId){
 		var handler = ClickEvent;
 		if (handler == null) {
 			return;
 		}
-		var e = new ClickEventArgs();
+		var e = new MouseEventArgs(buttonId);
 		handler(this, e);
 	}
-
+	
+	private void InvokeUpEvent(int buttonId){
+		var handler = ClickEvent;
+		if (handler == null) {
+			return;
+		}
+		var e = new MouseEventArgs(buttonId);
+		handler(this, e);
+	}
+	
+	private void InvokeDownEvent(int buttonId){
+		var handler = ClickEvent;
+		if (handler == null) {
+			return;
+		}
+		var e = new MouseEventArgs(buttonId);
+		handler(this, e);
+	}
 }

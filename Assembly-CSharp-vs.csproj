@@ -47,7 +47,7 @@
      <Compile Include="Assets\Misc\Menu.cs" />
      <Compile Include="Assets\Scripts\Facebook.cs" />
      <Compile Include="Assets\Scripts\GUILib\Box.cs" />
-     <Compile Include="Assets\Scripts\GUILib\EventArgs\ClickEventArgs.cs" />
+     <Compile Include="Assets\Scripts\GUILib\EventArgs\MouseEventArgs.cs" />
      <Compile Include="Assets\Scripts\GUILib\HorizontalLayoutBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\IInteractionBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\ILayoutBehaviour.cs" />
@@ -55,6 +55,8 @@
      <Compile Include="Assets\Scripts\GUILib\Screen.cs" />
      <Compile Include="Assets\Scripts\GUILib\ScreenConfig.cs" />
      <Compile Include="Assets\Scripts\GUILib\VerticalLayoutBehaviour.cs" />
+     <Compile Include="Assets\Scripts\General\TimeBehaviour.cs" />
+     <Compile Include="Assets\Scripts\General\Timer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
