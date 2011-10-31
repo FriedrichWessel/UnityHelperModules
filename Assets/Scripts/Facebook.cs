@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Runtime.InteropServices;
-using System;
 
 public class Facebook : MonoBehaviour {
 	public string AppId;
@@ -105,5 +104,11 @@ public class Facebook : MonoBehaviour {
 		extern static private void _graphRequest(string methodname, string[] param, string method);
 		[System.Runtime.InteropServices.DllImport("__Internal")]
 		extern static private void _deleteSession();
+	#else
+		private static void _init(string AppId) {}
+		private static void _authorize(int permissions) {getInstance().loggedOut();}
+		private static void _logout() {getInstance().loggedOut();}
+		private static void _graphRequest(string methodname, string[] param, string method) {getInstance().requestFailed("Not implemented");}
+		private static void _deleteSession() {}
 	#endif
 }
