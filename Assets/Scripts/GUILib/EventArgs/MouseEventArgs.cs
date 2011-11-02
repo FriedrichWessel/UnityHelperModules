@@ -4,10 +4,10 @@ using System;
 
 public class MouseEventArgs : EventArgs {// where T : MonoBehaviour{
 
-	public int buttonId{get;set;}
+	public int ButtonId{get;set;}
 	
 	public MouseEventArgs(int buttonId) {
-		this.buttonId = buttonId;		
+		this.ButtonId = buttonId;		
 	}
 		
 
