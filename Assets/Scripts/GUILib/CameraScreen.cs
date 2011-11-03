@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class CameraScreen : Frame {
 
-	private Dictionary<Box,Rect> childTransformation; 
+	public Dictionary<Box,Rect> childTransformation; 
 	
 	// Public Member - init in the inspector
 	public Camera ScreenCamera;
@@ -16,8 +16,18 @@ public class CameraScreen : Frame {
 		}
 	}
 	
-	void Start(){
+	private Box[] allChildren{
+		get{
+			return (gameObject.GetComponentsInChildren<Box>() as Box[]);
+		}
+	}
+	
+	void Awake(){
 		initChildTransformations();
+		
+	}
+	void Start(){
+		
 		CalculateAbsolutePositions();
 		initEvents();
 		
@@ -26,7 +36,6 @@ public class CameraScreen : Frame {
 	
 	private void initChildTransformations(){
 		childTransformation = new Dictionary<Box, Rect>();
-		Box[] allChildren = gameObject.GetComponentsInChildren<Box>() as Box[];
 		foreach(Box b in allChildren){
 			childTransformation.Add(b, new Rect(0,0,0,0));
 		}
@@ -42,13 +51,14 @@ public class CameraScreen : Frame {
 	public override void LayoutElement(){
 		base.LayoutElement();
 		createElements();
+		
 	}
 	
 	
 	public void CalculateAbsolutePositions(){
 		base.LayoutElement();
 		foreach(KeyValuePair<Box, Rect> pair in childTransformation){
-			pair.Value = getRelativePosition(pair.Key.Transformation);
+			childTransformation[pair.Key] = getRelativePosition(pair.Key.Transformation);
 		}
 		
 			
@@ -62,7 +72,7 @@ public class CameraScreen : Frame {
 		return new Vector2(factorX, factorY);
 	}
 	
-	private static Rect getRelativePosition(Rect rect){
+	private Rect getRelativePosition(Rect rect){
 		Rect camPosition = ScreenCamera.pixelRect;
 		// Inverse Screenposition on y because GUI (0,0) is on top camera (0,0) is on Bottom 
 		if(ScreenCamera.pixelHeight != Screen.height)
@@ -78,7 +88,7 @@ public class CameraScreen : Frame {
 	// PRIVATE METHODS
 	private void createElements(){
 		foreach (KeyValuePair<Box, Rect> pair in childTransformation)
-			pair.Key.createElement(pair.Value);
+			pair.Key.createGUIElement(pair.Value);
 	}
 	
 

@@ -49,7 +49,7 @@ public class Box : Frame {
 	
 	}
 	
-	public virtual void createElement(Rect transformation){
+	public virtual void createGUIElement(Rect transformation){
 		UnityEngine.GUI.Box(transformation,"", currentStyle);	
 	}
 	

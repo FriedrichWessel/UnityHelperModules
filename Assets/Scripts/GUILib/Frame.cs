@@ -11,7 +11,7 @@ public class Frame : MonoBehaviour {
 	private delegate void ActionEvent(Box b);
 		
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		initDirectChildren();
 	}
 	

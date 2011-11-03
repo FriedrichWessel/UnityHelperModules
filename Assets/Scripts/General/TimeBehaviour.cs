@@ -7,12 +7,13 @@ public class TimeBehaviour : MonoBehaviour {
 	
 	void Awake(){
 		Instance = this;
+		timerList = new List<Timer>();
 	}
 	private List<Timer> timerList;
 	
 	// Use this for initialization
 	void Start () {
-		timerList = new List<Timer>();
+		
 	}
 	
 	// Update is called once per frame
