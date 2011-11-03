@@ -2,15 +2,27 @@
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GUILib/CameraScreen.cs">
     <Files>
-      <File FileName="../HappyPenguin/unity_project/Assets/Scripts/GUI/UIElementBehaviour.cs" Line="186" Column="3" />
-      <File FileName="Assets/Scripts/GUILib/CameraScreen.cs" Line="75" Column="29" />
-      <File FileName="Assets/Scripts/GUILib/InputEvents.cs" Line="24" Column="3" />
-      <File FileName="Assets/Scripts/GUILib/Box.cs" Line="17" Column="11" />
-      <File FileName="../HappyPenguin/unity_project/Assets/Scripts/GUI/GeneralScreenGUI.cs" Line="95" Column="4" />
-      <File FileName="Assets/Scripts/GUILib/Frame.cs" Line="8" Column="2" />
-      <File FileName="Assets/Scripts/GUILib/Button.cs" Line="17" Column="10" />
-      <File FileName="Assets/Scripts/GUILib/InteractionBehaviour.cs" Line="4" Column="60" />
+      <File FileName="Assets/Scripts/GUILib/CameraScreen.cs" Line="27" Column="18" />
+      <File FileName="Assets/Scripts/GUILib/Box.cs" Line="50" Column="2" />
+      <File FileName="../HappyPenguin/unity_project/Assets/Scripts/GUI/GeneralScreenGUI.cs" Line="29" Column="75" />
+      <File FileName="../HappyPenguin/unity_project/Assets/Scripts/GUI/UIElementBehaviour.cs" Line="17" Column="23" />
+      <File FileName="Assets/Scripts/GUILib/InteractionBehaviour.cs" Line="11" Column="44" />
+      <File FileName="Assets/Scripts/GUILib/Control.cs" Line="19" Column="2" />
+      <File FileName="Assets/Scripts/GUILib/Frame.cs" Line="24" Column="2" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Assembly-CSharp" expanded="True" selected="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="GUILib" expanded="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />

@@ -5,9 +5,14 @@ using System;
 public class InputEvents : MonoBehaviour{
 
 	
+	public float ClickTimeInSeconds = 0.1f;
+	
 	public static InputEvents Instance;
 	
 	public event EventHandler<MouseEventArgs> ClickEvent;
+	public event EventHandler<MouseEventArgs> DownEvent;
+	public event EventHandler<MouseEventArgs> UpEvent;
+	public event EventHandler<MouseEventArgs> HoverEvent;
 	
 	private Timer clickTimer;
 	private bool clickStarted = false;
@@ -52,7 +57,7 @@ public class InputEvents : MonoBehaviour{
 	
 	private void clickStart(int buttonId){
 		InvokeDownEvent(buttonId);
-		clickTimer.StartTimer(0.001f);
+		clickTimer.StartTimer(ClickTimeInSeconds);
 		clickStarted = true;
 	}
 	
@@ -79,7 +84,7 @@ public class InputEvents : MonoBehaviour{
 	}
 	
 	private void InvokeUpEvent(int buttonId){
-		var handler = ClickEvent;
+		var handler = UpEvent;
 		if (handler == null) {
 			return;
 		}
@@ -88,7 +93,7 @@ public class InputEvents : MonoBehaviour{
 	}
 	
 	private void InvokeDownEvent(int buttonId){
-		var handler = ClickEvent;
+		var handler = DownEvent;
 		if (handler == null) {
 			return;
 		}

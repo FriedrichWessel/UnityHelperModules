@@ -47,9 +47,9 @@
      <Compile Include="Assets\Misc\Menu.cs" />
      <Compile Include="Assets\Scripts\Facebook.cs" />
      <Compile Include="Assets\Scripts\GUILib\Box.cs" />
-     <Compile Include="Assets\Scripts\GUILib\BoxTransformtionMap.cs" />
      <Compile Include="Assets\Scripts\GUILib\Button.cs" />
      <Compile Include="Assets\Scripts\GUILib\CameraScreen.cs" />
+     <Compile Include="Assets\Scripts\GUILib\Control.cs" />
      <Compile Include="Assets\Scripts\GUILib\EventArgs\MouseEventArgs.cs" />
      <Compile Include="Assets\Scripts\GUILib\EventArgs\SwipeEventArgs.cs" />
      <Compile Include="Assets\Scripts\GUILib\Frame.cs" />
@@ -59,6 +59,7 @@
      <Compile Include="Assets\Scripts\GUILib\InteractionBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\LayoutBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\ScreenConfig.cs" />
+     <Compile Include="Assets\Scripts\GUILib\TestAllInteractionsBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\VerticalLayoutBehaviour.cs" />
      <Compile Include="Assets\Scripts\General\TimeBehaviour.cs" />
      <Compile Include="Assets\Scripts\General\Timer.cs" />

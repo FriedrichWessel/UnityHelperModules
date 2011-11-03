@@ -13,9 +13,15 @@ public class Box : Frame {
 	
 	public GUIStyle InactiveStyle; 
 
-	
+	public Rect RealRegionOnScreen{
+		get;
+		set;
+	}	
 	protected GUIStyle currentStyle;
+
+	protected CameraScreen activeScreen;
 	
+
 	// PROPERTYS
 	public Vector2 position{
 		get{
@@ -33,17 +39,30 @@ public class Box : Frame {
 			return new Vector2(Transformation.xMax, Transformation.yMin);
 		}
 		set{
-			value.x = Transformation.xMax;
-			value.y = Transformation.yMin;
+			value.x = Transformation.width;
+			value.y = Transformation.height;
 		}
 	}
 	
 	
 	
+	// DONT USE THIS
+	void Awake(){
+		
+		AwakeOverride();
+		
+	}
+	
 	// Use this for initialization
-	new void Start () {
-		base.Start();
+	protected override void AwakeOverride(){
+		base.AwakeOverride();
+		RealRegionOnScreen = new Rect(0,0,0,0);
 		currentStyle = InactiveStyle;
+		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
+	}
+	
+	void Start () {
+
 	}
 	
 	// Update is called once per frame
@@ -51,12 +70,14 @@ public class Box : Frame {
 	
 	}
 	
-	public virtual void createGUIElement(Rect transformation){
-		UnityEngine.GUI.Box(transformation,"", currentStyle);	
+	public virtual void createGUIElement(){
+		//Debug.Log("CurrenStyle: " + currentStyle.name);
+		//Debug.Log("RealRegion: " + RealRegionOnScreen);
+		UnityEngine.GUI.Box(RealRegionOnScreen,"", currentStyle);	
 	}
 	
-	public bool checkMouseOverElement(){
-		return CameraScreen.cursorInside(position, size);
+	public virtual  bool checkMouseOverElement(){
+		return CameraScreen.cursorInside(RealRegionOnScreen);
 	}
 	
 	

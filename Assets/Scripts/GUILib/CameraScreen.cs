@@ -4,16 +4,14 @@ using System.Collections.Generic;
 
 public class CameraScreen : Frame {
 
-	public List<BoxTransformationMap> childTransformation; 
-	
 	// If DebugModus is in ScreenPosition is update every OnGUI Call usefull for positioning elements
 	// but not good for the framerate
-	
 	public bool DebugModus;
+
 	// Public Member - init in the inspector
 	public Camera ScreenCamera;
 	
-	// Public Propertys
+	//  Propertys
 	public static Vector2 mousePosition{
 		get{
 			return NormalizeMousePosition(Input.mousePosition); 
@@ -26,27 +24,28 @@ public class CameraScreen : Frame {
 		}
 	}
 	
-	new void Awake(){
-		base.Awake();
-		initChildTransformations();
-		
+	// DONT USE THIS
+	void Awake(){
+		AwakeOverride();
 	}
-	new void Start(){
-		base.Start();
+	
+	protected override void AwakeOverride(){
+		base.AwakeOverride();
+	}
+	
+	void Start(){
 		CalculateAbsolutePositions();
 		initEvents();
 		
 		
 	}
 	
-	private void initChildTransformations(){
-		childTransformation = new List<BoxTransformationMap>();
-		foreach(Box b in allChildren){
-			childTransformation.Add(new BoxTransformationMap(b, new Rect(0,0,0,0)));
-		}
-	}
+	
 	private void initEvents(){
 		InputEvents.Instance.ClickEvent += OnClick;	
+		InputEvents.Instance.HoverEvent += OnHover;
+		InputEvents.Instance.DownEvent += OnDown;
+		InputEvents.Instance.UpEvent += OnUp;
 	}
 	
 	void OnGUI(){
@@ -66,8 +65,8 @@ public class CameraScreen : Frame {
 	
 	public void CalculateAbsolutePositions(){
 		base.LayoutElement();
-		foreach(BoxTransformationMap map in childTransformation){
-			map.Transformation = getRelativePosition(map.Box.Transformation);
+		foreach(Box box in allChildren){
+			box.RealRegionOnScreen = GetRelativePosition(box.Transformation);
 		}
 		
 	}
@@ -79,7 +78,7 @@ public class CameraScreen : Frame {
 		return new Vector2(factorX, factorY);
 	}
 	
-	private Rect getRelativePosition(Rect rect){
+	public Rect GetRelativePosition(Rect rect){
 		Rect camPosition = ScreenCamera.pixelRect;
 		// Inverse Screenposition on y because GUI (0,0) is on top camera (0,0) is on Bottom 
 		if(ScreenCamera.pixelHeight != Screen.height)
@@ -94,8 +93,8 @@ public class CameraScreen : Frame {
 	
 	// PRIVATE METHODS
 	private void createElements(){
-		foreach(BoxTransformationMap map in childTransformation){
-			map.Box.createGUIElement(map.Transformation);
+		foreach(Box box in allChildren){
+			box.createGUIElement();
 		}
 	}
 	
@@ -110,12 +109,37 @@ public class CameraScreen : Frame {
 			flagX = true;
 		if (mousePosition.y >= elementPosition.y && (mousePosition.y <= (elementPosition.y + elementSize.y)))
 			flagY = true;
-		
-		//Debug.Log(mousePos.x + " " + mousePos.y + " " +elemPos.x + " " +elemPos.y +" " + elemSize.x + " " +elemSize.y + " " + (flagX && flagY && flagZ));
-		
+		Debug.Log("Cursor Inside Check");
+		Debug.Log(mousePosition.x + " " + mousePosition.y + " " +elementPosition.x + " " +elementPosition.y +" " + elementSize.x + " " +elementSize.y + " " + (flagX && flagY));
+		Debug.Log("");
 		return (flagX && flagY);
 	}
 	
+	
+	public static bool cursorInside(Rect region){
+		return cursorInside(new Vector2(region.x, region.y), new Vector2(region.width, region.height));
+	}
+	
+	public static CameraScreen GetScreenForObject(GameObject obj){
+		GameObject savedObj = obj;
+		GameObject savedParent = null;
+		CameraScreen screen = null;
+		while(obj != null){
+			screen = obj.GetComponent<CameraScreen>();
+			if( screen != null){
+				break;
+			}
+				
+			savedParent = obj.transform.parent.gameObject;
+			obj = savedParent;
+		}
+		if(screen == null){
+			Debug.LogWarning("Element: " + savedObj.gameObject.name + " is not a child of a Screen!");
+		}
+		return screen;
+		
+		
+	}
 	private static Vector3 NormalizeMousePosition(Vector2 mousePosition){
 		float factorY = (float)(Screen.height) / (float)(ScreenConfig.TargetScreenHeight); 
 		float factorX = (float)(Screen.width) / (float)(ScreenConfig.TargetScreenWidth);

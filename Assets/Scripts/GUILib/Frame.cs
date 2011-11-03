@@ -10,13 +10,17 @@ public class Frame : MonoBehaviour {
 	private delegate void InteractionEvent(InteractionBehaviour ib);
 	private delegate void ActionEvent(Box b);
 		
+	// DONT USE THIS!
+	void Awake () {
+		AwakeOverride();
+	}
+	
 	// Use this for initialization
-	protected void Awake () {
-		Debug.Log("Frame Awake");
+	protected virtual void AwakeOverride(){
 		initDirectChildren();
 	}
 	
-	protected void Start(){
+	void Start(){
 		
 	}
 	// Update is called once per frame
@@ -65,8 +69,9 @@ public class Frame : MonoBehaviour {
 			if(b.checkMouseOverElement()){
 				action(b);
 				InteractionBehaviour[] behaviours = b.GetComponents<InteractionBehaviour>() as InteractionBehaviour[];
-				foreach(InteractionBehaviour ib in behaviours)
+				foreach(InteractionBehaviour ib in behaviours){
 					interaction(ib);
+				}
 			}
 				
 		}
@@ -78,9 +83,10 @@ public class Frame : MonoBehaviour {
 		directChildren = new List<Box>();
 		Box[] components = gameObject.GetComponentsInChildren<Box>();
 		foreach(Box b in components){
-			if(b.gameObject.transform.parent == this.gameObject)
+			if(b.gameObject.transform.parent == this.gameObject.transform)
 				directChildren.Add(b);
 		}
+		
 		
 	}
 }

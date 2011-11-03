@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Button : Box {
+public class Button : Control {
 
 	public GUIStyle HoverStyle;
 	public GUIStyle ActiveStyle;
