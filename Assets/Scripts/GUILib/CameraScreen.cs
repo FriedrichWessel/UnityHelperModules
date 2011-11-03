@@ -4,8 +4,12 @@ using System.Collections.Generic;
 
 public class CameraScreen : Frame {
 
-	public Dictionary<Box,Rect> childTransformation; 
+	public List<BoxTransformationMap> childTransformation; 
 	
+	// If DebugModus is in ScreenPosition is update every OnGUI Call usefull for positioning elements
+	// but not good for the framerate
+	
+	public bool DebugModus;
 	// Public Member - init in the inspector
 	public Camera ScreenCamera;
 	
@@ -22,12 +26,13 @@ public class CameraScreen : Frame {
 		}
 	}
 	
-	void Awake(){
+	new void Awake(){
+		base.Awake();
 		initChildTransformations();
 		
 	}
-	void Start(){
-		
+	new void Start(){
+		base.Start();
 		CalculateAbsolutePositions();
 		initEvents();
 		
@@ -35,9 +40,9 @@ public class CameraScreen : Frame {
 	}
 	
 	private void initChildTransformations(){
-		childTransformation = new Dictionary<Box, Rect>();
+		childTransformation = new List<BoxTransformationMap>();
 		foreach(Box b in allChildren){
-			childTransformation.Add(b, new Rect(0,0,0,0));
+			childTransformation.Add(new BoxTransformationMap(b, new Rect(0,0,0,0)));
 		}
 	}
 	private void initEvents(){
@@ -45,11 +50,15 @@ public class CameraScreen : Frame {
 	}
 	
 	void OnGUI(){
+		
 		LayoutElement();
+		
 	}
 	
 	public override void LayoutElement(){
 		base.LayoutElement();
+		if(DebugModus)
+			CalculateAbsolutePositions();
 		createElements();
 		
 	}
@@ -57,11 +66,9 @@ public class CameraScreen : Frame {
 	
 	public void CalculateAbsolutePositions(){
 		base.LayoutElement();
-		foreach(KeyValuePair<Box, Rect> pair in childTransformation){
-			childTransformation[pair.Key] = getRelativePosition(pair.Key.Transformation);
+		foreach(BoxTransformationMap map in childTransformation){
+			map.Transformation = getRelativePosition(map.Box.Transformation);
 		}
-		
-			
 		
 	}
 	
@@ -87,8 +94,9 @@ public class CameraScreen : Frame {
 	
 	// PRIVATE METHODS
 	private void createElements(){
-		foreach (KeyValuePair<Box, Rect> pair in childTransformation)
-			pair.Key.createGUIElement(pair.Value);
+		foreach(BoxTransformationMap map in childTransformation){
+			map.Box.createGUIElement(map.Transformation);
+		}
 	}
 	
 

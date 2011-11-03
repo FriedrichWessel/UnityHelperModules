@@ -39,8 +39,10 @@ public class Box : Frame {
 	}
 	
 	
+	
 	// Use this for initialization
-	void Start () {
+	new void Start () {
+		base.Start();
 		currentStyle = InactiveStyle;
 	}
 	

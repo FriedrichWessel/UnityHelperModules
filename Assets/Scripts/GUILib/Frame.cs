@@ -11,10 +11,14 @@ public class Frame : MonoBehaviour {
 	private delegate void ActionEvent(Box b);
 		
 	// Use this for initialization
-	void Awake () {
+	protected void Awake () {
+		Debug.Log("Frame Awake");
 		initDirectChildren();
 	}
 	
+	protected void Start(){
+		
+	}
 	// Update is called once per frame
 	void Update () {
 	

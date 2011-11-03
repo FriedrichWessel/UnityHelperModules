@@ -3,7 +3,7 @@ using System.Collections;
 
 public static class ScreenConfig {
 
-	public static int TargetScreenWidth;
-	public static int TargetScreenHeight;
-	public static float ScreenAspect;
+	public static int TargetScreenWidth = 960;
+	public static int TargetScreenHeight = 640;
+	public static float ScreenAspect = 1.0f;
 }

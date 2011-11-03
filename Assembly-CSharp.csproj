@@ -47,6 +47,7 @@
      <Compile Include="Assets\Misc\Menu.cs" />
      <Compile Include="Assets\Scripts\Facebook.cs" />
      <Compile Include="Assets\Scripts\GUILib\Box.cs" />
+     <Compile Include="Assets\Scripts\GUILib\BoxTransformtionMap.cs" />
      <Compile Include="Assets\Scripts\GUILib\Button.cs" />
      <Compile Include="Assets\Scripts\GUILib\CameraScreen.cs" />
      <Compile Include="Assets\Scripts\GUILib\EventArgs\MouseEventArgs.cs" />
