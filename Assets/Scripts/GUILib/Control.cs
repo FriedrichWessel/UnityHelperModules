@@ -4,7 +4,7 @@ using System.Collections;
 public class Control : Box {
 
 	// Show Active Region is an Debug Option that makes the active array visible
-	public bool ShowActiveRegion;
+	public bool ShowActiveRegion = false;
 	public Rect ActiveRegion;
 	
 	private Rect realActiveRegion;
@@ -25,19 +25,18 @@ public class Control : Box {
 	
 	public override void createGUIElement(){
 		base.createGUIElement();
+
+#if UNITY_EDITOR
 		if(ShowActiveRegion){
 			initActiveRegion();
-			//Debug.Log("RealActive Region for draw");
-			//Debug.Log(realActiveRegion);
 			UnityEngine.GUI.Box(realActiveRegion, "");	
 		}
+#endif 
 	}
 	
 	public override bool checkMouseOverElement(){
 		if(ShowActiveRegion)
 			initActiveRegion();
-		/*Debug.Log("RealActiveRegion For Check : " + realActiveRegion  + "\n" +
-			"Object: " + this.gameObject.name);*/
 		Rect t = new Rect(Transformation.x+ ActiveRegion.x, 
 		                          Transformation.y + ActiveRegion.y, ActiveRegion.width, ActiveRegion.height);
 		return CameraScreen.cursorInside(t);

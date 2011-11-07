@@ -56,6 +56,7 @@ public class Frame : MonoBehaviour {
 	}
 	
 	public virtual void OnMove(object sender, MouseEventArgs e){
+		//Debug.Log("OnMove");
 		callHandler(ib=>{ib.Move();}, action=>{action.OnMove(sender, e);});
 	}
 	
@@ -72,6 +73,8 @@ public class Frame : MonoBehaviour {
 				foreach(InteractionBehaviour ib in behaviours){
 					interaction(ib);
 				}
+			} else {
+				b.resetElement();
 			}
 				
 		}

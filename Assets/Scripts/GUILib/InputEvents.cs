@@ -12,10 +12,13 @@ public class InputEvents : MonoBehaviour{
 	public event EventHandler<MouseEventArgs> ClickEvent;
 	public event EventHandler<MouseEventArgs> DownEvent;
 	public event EventHandler<MouseEventArgs> UpEvent;
-	public event EventHandler<MouseEventArgs> HoverEvent;
+	public event EventHandler<MouseEventArgs> MoveEvent;
 	
 	private Timer clickTimer;
 	private bool clickStarted = false;
+	
+	private float mouseX; 
+	private float mouseY;
 	
 	void Awake(){
 		Instance = this;
@@ -24,12 +27,27 @@ public class InputEvents : MonoBehaviour{
 	}
 	
 	void Update(){
+		checkMove();
+#if UNITY_IPHONE || UNITY_ANDROID
 		checkTouches();
+#endif
+#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER
 		checkClick();
+#endif
 		
 		
 	}
 	
+	private void checkMove(){
+		float oldMouseX = mouseX;
+		float oldMouseY = mouseY;
+		mouseX = Input.mousePosition.x;
+		mouseY = Input.mousePosition.y;
+		Vector2 direction = new Vector2(oldMouseX - mouseX, oldMouseY - mouseY);
+		if(direction.magnitude != 0)
+			InvokeMoveEvent(direction);
+		
+	}
 	private void checkClick(){
 		if(Input.touches.Length > 0)
 			return;
@@ -100,4 +118,14 @@ public class InputEvents : MonoBehaviour{
 		var e = new MouseEventArgs(buttonId);
 		handler(this, e);
 	}
+
+	private void InvokeMoveEvent(Vector2 direction){
+		var handler = MoveEvent;
+		if (handler == null){
+			return;
+		}
+		var e = new MouseEventArgs(direction);
+		handler(this, e);
+	}
+	
 }

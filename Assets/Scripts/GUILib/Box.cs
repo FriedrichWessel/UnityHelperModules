@@ -11,7 +11,9 @@ public class Box : Frame {
 	public positionFloat verticalFloat;
 	public positionFloat horizontalFloat;
 	
-	public GUIStyle InactiveStyle; 
+	public GUIStyle Style; 
+	
+	private GUIStyle inactiveStyle;
 
 	public Rect RealRegionOnScreen{
 		get;
@@ -57,7 +59,8 @@ public class Box : Frame {
 	protected override void AwakeOverride(){
 		base.AwakeOverride();
 		RealRegionOnScreen = new Rect(0,0,0,0);
-		currentStyle = InactiveStyle;
+		initStyle();
+		resetElement();
 		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
 	}
 	
@@ -71,8 +74,6 @@ public class Box : Frame {
 	}
 	
 	public virtual void createGUIElement(){
-		//Debug.Log("CurrenStyle: " + currentStyle.name);
-		//Debug.Log("RealRegion: " + RealRegionOnScreen);
 		UnityEngine.GUI.Box(RealRegionOnScreen,"", currentStyle);	
 	}
 	
@@ -82,8 +83,14 @@ public class Box : Frame {
 	
 	
 	
-	protected void resetElement(){
-		currentStyle = InactiveStyle;
+	public void resetElement(){
+		currentStyle = inactiveStyle;
+		
+	}
+	
+	protected virtual void initStyle(){
+		inactiveStyle = new GUIStyle();
+		inactiveStyle.normal = Style.normal;
 	}
 	
 	
