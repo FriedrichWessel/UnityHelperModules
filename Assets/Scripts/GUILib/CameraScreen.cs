@@ -50,9 +50,7 @@ public class CameraScreen : Frame {
 	}
 	
 	void OnGUI(){
-		
 		LayoutElement();
-		
 	}
 	
 	public override void LayoutElement(){
@@ -92,7 +90,7 @@ public class CameraScreen : Frame {
 		return new Rect (  newPosition.x, newPosition.y, newSize.x, newSize.y );
 	} 
 	
-	// PRIVATE METHODS
+
 	private void createElements(){
 		foreach(Box box in allChildren){
 			box.createGUIElement();
@@ -138,6 +136,7 @@ public class CameraScreen : Frame {
 		
 		
 	}
+	
 	private static Vector3 NormalizeMousePosition(Vector2 mousePosition){
 		float factorY = (float)(Screen.height) / (float)(ScreenConfig.TargetScreenHeight); 
 		float factorX = (float)(Screen.width) / (float)(ScreenConfig.TargetScreenWidth);

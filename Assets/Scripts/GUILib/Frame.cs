@@ -40,28 +40,27 @@ public class Frame : MonoBehaviour {
 	
 	
 	public virtual void OnClick(object sender, MouseEventArgs e){
-		callHandler(ib=>{ib.Click();}, action=>{action.OnClick(sender, e);});
+		callHandler(ib=>{ib.Click(e);}, action=>{action.OnClick(sender, e);});
 	}
 	
 	public virtual void OnHover(object sender, MouseEventArgs e){
-		callHandler(ib=>{ib.Hover();}, action=>{action.OnHover(sender, e);});
+		callHandler(ib=>{ib.Hover(e);}, action=>{action.OnHover(sender, e);});
 	}
 	
 	public virtual void OnDown(object sender, MouseEventArgs e){
-		callHandler(ib=>{ib.Down();}, action=>{action.OnDown(sender, e);});
+		callHandler(ib=>{ib.Down(e);}, action=>{action.OnDown(sender, e);});
 	}
 	
 	public virtual void OnUp(object sender, MouseEventArgs e){
-		callHandler(ib=>{ib.Up();}, action=>{action.OnUp(sender, e);});
+		callHandler(ib=>{ib.Up(e);}, action=>{action.OnUp(sender, e);});
 	}
 	
 	public virtual void OnMove(object sender, MouseEventArgs e){
-		//Debug.Log("OnMove");
-		callHandler(ib=>{ib.Move();}, action=>{action.OnMove(sender, e);});
+		callHandler(ib=>{ib.Move(e);}, action=>{action.OnMove(sender, e);});
 	}
 	
-	public virtual void OnSwipe(object sender, SwipeEventArgs e){
-		callHandler(ib=>{ib.Swipe(e.Degree);}, action=>{action.OnSwipe(sender, e);});
+	public virtual void OnSwipe(object sender, MouseEventArgs e){
+		callHandler(ib=>{ib.Swipe(e);}, action=>{action.OnSwipe(sender, e);});
 	}
 	
 	

@@ -3,11 +3,11 @@ using System.Collections;
 
 public class InteractionBehaviour  : MonoBehaviour{
 
-	public virtual void Click(){}
-	public virtual void Hover(){}
-	public virtual void Down(){}
-	public virtual void Up(){}
-	public virtual void Move(){}
-	public virtual void Swipe(float degrees){}
+	public virtual void Click(MouseEventArgs mouse){}
+	public virtual void Hover(MouseEventArgs mouse){}
+	public virtual void Down(MouseEventArgs mouse){}
+	public virtual void Up(MouseEventArgs mouse){}
+	public virtual void Move(MouseEventArgs mouse){}
+	public virtual void Swipe(MouseEventArgs mouse){}
 	
 }

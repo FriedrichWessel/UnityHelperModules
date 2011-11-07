@@ -51,7 +51,6 @@
      <Compile Include="Assets\Scripts\GUILib\CameraScreen.cs" />
      <Compile Include="Assets\Scripts\GUILib\Control.cs" />
      <Compile Include="Assets\Scripts\GUILib\EventArgs\MouseEventArgs.cs" />
-     <Compile Include="Assets\Scripts\GUILib\EventArgs\SwipeEventArgs.cs" />
      <Compile Include="Assets\Scripts\GUILib\Frame.cs" />
      <Compile Include="Assets\Scripts\GUILib\HorizontalLayoutBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\ILayoutBehaviour.cs" />
