@@ -1,14 +1,14 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GUILib/CameraScreen.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\GUILib\CameraScreen.cs">
     <Files>
-      <File FileName="Assets/Scripts/GUILib/CameraScreen.cs" Line="27" Column="18" />
-      <File FileName="Assets/Scripts/GUILib/Box.cs" Line="50" Column="2" />
-      <File FileName="../HappyPenguin/unity_project/Assets/Scripts/GUI/GeneralScreenGUI.cs" Line="29" Column="75" />
-      <File FileName="../HappyPenguin/unity_project/Assets/Scripts/GUI/UIElementBehaviour.cs" Line="17" Column="23" />
-      <File FileName="Assets/Scripts/GUILib/InteractionBehaviour.cs" Line="11" Column="44" />
-      <File FileName="Assets/Scripts/GUILib/Control.cs" Line="19" Column="2" />
-      <File FileName="Assets/Scripts/GUILib/Frame.cs" Line="24" Column="2" />
+      <File FileName="Assets\Scripts\GUILib\Box.cs" Line="1" Column="1" />
+      <File FileName="Assets\Scripts\GUILib\CameraScreen.cs" Line="112" Column="15" />
+      <File FileName="..\HappyPenguin\unity_project\Assets\Scripts\GUI\GeneralScreenGUI.cs" Line="29" Column="64" />
+      <File FileName="..\HappyPenguin\unity_project\Assets\Scripts\GUI\UIElementBehaviour.cs" Line="17" Column="23" />
+      <File FileName="Assets\Scripts\GUILib\InteractionBehaviour.cs" Line="11" Column="44" />
+      <File FileName="Assets\Scripts\GUILib\Control.cs" Line="19" Column="2" />
+      <File FileName="Assets\Scripts\GUILib\Frame.cs" Line="24" Column="2" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">

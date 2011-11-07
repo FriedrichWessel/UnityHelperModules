@@ -109,9 +109,12 @@ public class CameraScreen : Frame {
 			flagX = true;
 		if (mousePosition.y >= elementPosition.y && (mousePosition.y <= (elementPosition.y + elementSize.y)))
 			flagY = true;
-		Debug.Log("Cursor Inside Check");
-		Debug.Log(mousePosition.x + " " + mousePosition.y + " " +elementPosition.x + " " +elementPosition.y +" " + elementSize.x + " " +elementSize.y + " " + (flagX && flagY));
-		Debug.Log("");
+		/*Debug.Log("Cursor Inside Check! \n" +
+					"Mouse Position: " + mousePosition.x + " " + mousePosition.y + "\n "
+		          +"Element Position: " +elementPosition.x + " " +elementPosition.y +"\n "
+		          +"ElementSize: " + elementSize.x + " " +elementSize.y + "\n" +
+		          "Flags: " + flagX + " " + flagY + " " + (flagX && flagY));*/
+		
 		return (flagX && flagY);
 	}
 	

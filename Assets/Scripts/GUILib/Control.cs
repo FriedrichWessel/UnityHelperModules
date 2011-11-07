@@ -36,10 +36,10 @@ public class Control : Box {
 	public override bool checkMouseOverElement(){
 		if(ShowActiveRegion)
 			initActiveRegion();
-		Debug.Log("RealActiveRegion For Check : ");
-		Debug.Log(realActiveRegion);
-		Rect t = new Rect(RealRegionOnScreen.x+ ActiveRegion.x, 
-		                            RealRegionOnScreen.y + ActiveRegion.y, ActiveRegion.width, ActiveRegion.height);
+		/*Debug.Log("RealActiveRegion For Check : " + realActiveRegion  + "\n" +
+			"Object: " + this.gameObject.name);*/
+		Rect t = new Rect(Transformation.x+ ActiveRegion.x, 
+		                          Transformation.y + ActiveRegion.y, ActiveRegion.width, ActiveRegion.height);
 		return CameraScreen.cursorInside(t);
 	}
 	
