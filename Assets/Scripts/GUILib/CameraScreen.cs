@@ -4,12 +4,13 @@ using System.Collections.Generic;
 
 public class CameraScreen : Frame {
 
-	// If DebugModus is in ScreenPosition is update every OnGUI Call usefull for positioning elements
+	// If DebugModus is checked, ScreenPosition is update every OnGUI call this is usefull for positioning elements
 	// but not good for the framerate
 	public bool DebugModus;
 
 	// Public Member - init in the inspector
 	public Camera ScreenCamera;
+	
 	
 	//  Propertys
 	public static Vector2 mousePosition{
@@ -34,7 +35,7 @@ public class CameraScreen : Frame {
 	}
 	
 	void Start(){
-		CalculateAbsolutePositions();
+		CalculatePhysicalRegion();
 		initEvents();
 		
 		
@@ -56,16 +57,16 @@ public class CameraScreen : Frame {
 	public override void LayoutElement(){
 		base.LayoutElement();
 		if(DebugModus)
-			CalculateAbsolutePositions();
+			CalculatePhysicalRegion();
 		createElements();
 		
 	}
 	
 	
-	public void CalculateAbsolutePositions(){
+	public void CalculatePhysicalRegion(){
 		base.LayoutElement();
 		foreach(Box box in allChildren){
-			box.RealRegionOnScreen = GetRelativePosition(box.Transformation);
+			box.RealRegionOnScreen = GetPhysicalRegionFromRect(box.VirtualRegionOnScreen);
 		}
 		
 	}
@@ -77,7 +78,7 @@ public class CameraScreen : Frame {
 		return new Vector2(factorX, factorY);
 	}
 	
-	public Rect GetRelativePosition(Rect rect){
+	public Rect GetPhysicalRegionFromRect(Rect rect){
 		Rect camPosition = ScreenCamera.pixelRect;
 		// Inverse Screenposition on y because GUI (0,0) is on top camera (0,0) is on Bottom 
 		if(ScreenCamera.pixelHeight != Screen.height)
@@ -145,6 +146,8 @@ public class CameraScreen : Frame {
 		mousePosition.y /= factorY;
 		return mousePosition;
 	}
+	
+	
 	
 
 }

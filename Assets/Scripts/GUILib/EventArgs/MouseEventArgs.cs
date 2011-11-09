@@ -10,12 +10,13 @@ public class MouseEventArgs : EventArgs {// where T : MonoBehaviour{
 		}
 	}
 	public Vector2 MoveDirection{get;set;}
-	public float MousePositionX{get;set;}
-	public float MousePositionY{get;set;}
+	public Vector2 MousPosition{get;set;}
 	
 	public MouseEventArgs(int buttonId) {
+		MousPosition = new Vector2(0,0);
 		MoveDirection = new Vector2(0,0);
-		this.ButtonId = buttonId;		
+		this.ButtonId = buttonId;	
+		
 	}
 
 	public MouseEventArgs(Vector2 direction) {

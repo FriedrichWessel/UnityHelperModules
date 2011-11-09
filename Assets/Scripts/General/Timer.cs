@@ -14,6 +14,9 @@ public class Timer {
 		TimeBehaviour.Instance.AddTimer(this);
 	}
 	
+	public Timer(float timeInSeconds){
+		maxTime = timeInSeconds;
+	}
 	~Timer(){
 		TimeBehaviour.Instance.RemoveTimer(this);
 	}

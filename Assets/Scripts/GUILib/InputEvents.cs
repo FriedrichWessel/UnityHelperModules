@@ -17,12 +17,12 @@ public class InputEvents : MonoBehaviour{
 	private Timer clickTimer;
 	private bool clickStarted = false;
 	
-	private float mouseX; 
-	private float mouseY;
+	private Vector2 mousePosition;
 	
 	void Awake(){
 		Instance = this;
 		clickTimer = new Timer();
+		mousePosition = new Vector2(0,0);
 		clickTimer.TimerFinished += OnClickTimerFinished;
 	}
 	
@@ -39,11 +39,9 @@ public class InputEvents : MonoBehaviour{
 	}
 	
 	private void checkMove(){
-		float oldMouseX = mouseX;
-		float oldMouseY = mouseY;
-		mouseX = Input.mousePosition.x;
-		mouseY = Input.mousePosition.y;
-		Vector2 direction = new Vector2(oldMouseX - mouseX, oldMouseY - mouseY);
+		Vector2 oldMouse = mousePosition;
+		mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+		Vector2 direction = oldMouse - mousePosition; 
 		if(direction.magnitude != 0)
 			InvokeMoveEvent(direction);
 		

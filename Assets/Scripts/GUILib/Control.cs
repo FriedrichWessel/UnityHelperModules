@@ -37,16 +37,16 @@ public class Control : Box {
 	public override bool checkMouseOverElement(){
 		if(ShowActiveRegion)
 			initActiveRegion();
-		Rect t = new Rect(Transformation.x+ ActiveRegion.x, 
-		                          Transformation.y + ActiveRegion.y, ActiveRegion.width, ActiveRegion.height);
+		Rect t = new Rect(VirtualRegionOnScreen.x+ ActiveRegion.x, 
+		                          VirtualRegionOnScreen.y + ActiveRegion.y, ActiveRegion.width, ActiveRegion.height);
 		return CameraScreen.cursorInside(t);
 	}
 	
+	// Caclulate the Absolute Values on the physical screen - because ActiveRegion is virtual an relative to the Control Position
 	private void initActiveRegion(){
-		
 		realActiveRegion = new Rect(RealRegionOnScreen.x+ ActiveRegion.x, 
 		                            RealRegionOnScreen.y + ActiveRegion.y, ActiveRegion.width, ActiveRegion.height);
-		Rect t = activeScreen.GetRelativePosition(realActiveRegion);
+		Rect t = activeScreen.GetPhysicalRegionFromRect(realActiveRegion);
 		realActiveRegion = new Rect(realActiveRegion.x, realActiveRegion.y, t.width, t.height);
 	}
 

@@ -83,11 +83,12 @@ public class Frame : MonoBehaviour {
 	
 	private void initDirectChildren(){
 		directChildren = new List<Box>();
-		Box[] components = gameObject.GetComponentsInChildren<Box>();
-		foreach(Box b in components){
-			if(b.gameObject.transform.parent == this.gameObject.transform)
+		foreach(Transform child in transform){
+			Box b = child.GetComponent<Box>();
+			if(b != null)
 				directChildren.Add(b);
 		}
+		
 		
 		
 	}

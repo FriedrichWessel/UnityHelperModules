@@ -3,13 +3,14 @@ using System.Collections;
 
 public class Box : Frame {
 
-	public enum positionFloat {left, right, top, bottom}
+	public enum HorizontalFloatPositions {left, right, none}
+	public enum VerticalFloatPositions {top, bottom, none}
 	
-	public Rect Transformation; 
+	public Rect VirtualRegionOnScreen; 
 	public LayoutBehaviour Layout;
 	public int layer;
-	public positionFloat verticalFloat;
-	public positionFloat horizontalFloat;
+	public VerticalFloatPositions verticalFloat;
+	public HorizontalFloatPositions horizontalFloat;
 	
 	public GUIStyle Style; 
 	
@@ -27,22 +28,22 @@ public class Box : Frame {
 	// PROPERTYS
 	public Vector2 position{
 		get{
-			return new Vector2(Transformation.x, Transformation.y);
+			return new Vector2(VirtualRegionOnScreen.x, VirtualRegionOnScreen.y);
 		}
 		set{
-			value.x = Transformation.x;
-			value.y = Transformation.y;
+			VirtualRegionOnScreen.x = value.x; 
+			VirtualRegionOnScreen.y = value.y;
 		}
 		
 	}
 	
 	public Vector2 size{
 		get{
-			return new Vector2(Transformation.xMax, Transformation.yMin);
+			return new Vector2(VirtualRegionOnScreen.xMax, VirtualRegionOnScreen.yMin);
 		}
 		set{
-			value.x = Transformation.width;
-			value.y = Transformation.height;
+			VirtualRegionOnScreen.width = value.x; 
+			VirtualRegionOnScreen.height = value.y; 
 		}
 	}
 	
