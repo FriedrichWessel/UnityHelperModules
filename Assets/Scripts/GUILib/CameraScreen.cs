@@ -80,9 +80,11 @@ public class CameraScreen : Frame {
 	
 	public Rect GetPhysicalRegionFromRect(Rect rect){
 		Rect camPosition = ScreenCamera.pixelRect;
-		// Inverse Screenposition on y because GUI (0,0) is on top camera (0,0) is on Bottom 
-		if(ScreenCamera.pixelHeight != Screen.height)
+		// Move Camera is needed for Splitscreen
+		if(((int)ScreenCamera.pixelHeight) != Screen.height){
+			//Debug.Log("ScreenCamera Height: " + ScreenCamera.pixelHeight +  "\n Screen Height: " + Screen.height);
 			camPosition.y = ScreenCamera.pixelHeight - camPosition.y;
+		}
 		
 		Vector2 factor = getFactor();
 		Vector2 newPosition = new Vector2((camPosition.x+rect.x)*factor.x, (camPosition.y +  rect.y)*factor.y);

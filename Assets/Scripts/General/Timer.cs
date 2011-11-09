@@ -11,12 +11,14 @@ public class Timer {
 	public event EventHandler TimerFinished;
 	
 	public Timer(){
-		TimeBehaviour.Instance.AddTimer(this);
+		init();
 	}
 	
 	public Timer(float timeInSeconds){
+		init();
 		maxTime = timeInSeconds;
 	}
+	
 	~Timer(){
 		TimeBehaviour.Instance.RemoveTimer(this);
 	}
@@ -43,6 +45,10 @@ public class Timer {
 	public void StopTimer(){
 		currentTime = 0;
 		run = false;
+	}
+	
+	private void init(){
+		TimeBehaviour.Instance.AddTimer(this);
 	}
 	
 	private void InvokeTimerFinished(){
