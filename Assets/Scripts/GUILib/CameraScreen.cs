@@ -93,7 +93,18 @@ public class CameraScreen : Frame {
 		return new Rect (  newPosition.x, newPosition.y, newSize.x, newSize.y );
 	} 
 	
-
+	protected override void callHandler(InteractionEvent interaction, ActionEvent action){
+		InteractionBehaviour[] behaviours = gameObject.GetComponents<InteractionBehaviour>() as InteractionBehaviour[];
+		foreach(InteractionBehaviour ib in behaviours){
+			interaction(ib);
+		}
+		base.callHandler(interaction, action);
+		
+		
+			
+		
+	}
+	
 	private void createElements(){
 		foreach(Box box in allChildren){
 			box.createGUIElement();

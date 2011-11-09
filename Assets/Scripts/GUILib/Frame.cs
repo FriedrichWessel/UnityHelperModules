@@ -7,8 +7,8 @@ public class Frame : MonoBehaviour {
 
 	
 	protected List<Box> directChildren;
-	private delegate void InteractionEvent(InteractionBehaviour ib);
-	private delegate void ActionEvent(Box b);
+	protected delegate void InteractionEvent(InteractionBehaviour ib);
+	protected delegate void ActionEvent(Box b);
 		
 	// DONT USE THIS!
 	void Awake () {
@@ -64,7 +64,7 @@ public class Frame : MonoBehaviour {
 	}
 	
 	
-	private void callHandler(InteractionEvent interaction, ActionEvent action){
+	protected virtual void callHandler(InteractionEvent interaction, ActionEvent action){
 		foreach(Box b in directChildren){
 			if(b.checkMouseOverElement()){
 				action(b);
