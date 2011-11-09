@@ -9,6 +9,8 @@ public class Frame : MonoBehaviour {
 	protected List<Box> directChildren;
 	protected delegate void InteractionEvent(InteractionBehaviour ib);
 	protected delegate void ActionEvent(Box b);
+	
+	protected ControlManager<Frame> controlerManager;
 		
 	// DONT USE THIS!
 	void Awake () {
@@ -17,6 +19,7 @@ public class Frame : MonoBehaviour {
 	
 	// Use this for initialization
 	protected virtual void AwakeOverride(){
+		controlerManager = new ControlManager<Frame>();
 		initDirectChildren();
 	}
 	
@@ -25,7 +28,7 @@ public class Frame : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
-	
+		controlerManager.Update(this);
 	}
 	
 	/**

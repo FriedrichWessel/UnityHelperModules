@@ -41,7 +41,7 @@ public class InputEvents : MonoBehaviour{
 	private void checkMove(){
 		Vector2 oldMouse = mousePosition;
 		mousePosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-		Vector2 direction = oldMouse - mousePosition; 
+		Vector2 direction = new Vector2(mousePosition.x - oldMouse.x, oldMouse.y - mousePosition.y); 
 		if(direction.magnitude != 0)
 			InvokeMoveEvent(direction);
 		

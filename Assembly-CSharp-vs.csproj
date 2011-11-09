@@ -57,9 +57,16 @@
      <Compile Include="Assets\Scripts\GUILib\InputEvents.cs" />
      <Compile Include="Assets\Scripts\GUILib\InteractionBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\LayoutBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUILib\Samples\SampleUIController.cs" />
+     <Compile Include="Assets\Scripts\GUILib\Samples\TestAllInteractionsBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUILib\Samples\TestMoveWithMouse.cs" />
+     <Compile Include="Assets\Scripts\GUILib\Samples\TestUIControllerBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\ScreenConfig.cs" />
-     <Compile Include="Assets\Scripts\GUILib\TestAllInteractionsBehaviour.cs" />
      <Compile Include="Assets\Scripts\GUILib\VerticalLayoutBehaviour.cs" />
+     <Compile Include="Assets\Scripts\General\ControlManager.cs" />
+     <Compile Include="Assets\Scripts\General\Controller.cs" />
+     <Compile Include="Assets\Scripts\General\Samples\BehaviourEventArgs.cs" />
+     <Compile Include="Assets\Scripts\General\Samples\SampleMovementController.cs" />
      <Compile Include="Assets\Scripts\General\TimeBehaviour.cs" />
      <Compile Include="Assets\Scripts\General\Timer.cs" />
   </ItemGroup>
