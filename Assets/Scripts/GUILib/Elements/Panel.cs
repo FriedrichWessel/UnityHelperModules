@@ -17,6 +17,8 @@ public class Panel : Frame {
 	public GUIStyle Style; 
 	
 	private GUIStyle inactiveStyle;
+	
+	private GUIPlane plane;
 
 	public Rect RealRegionOnScreen{
 		get;
@@ -73,7 +75,10 @@ public class Panel : Frame {
 	
 	// Update is called once per frame
 	void Update () {
-	
+#if UNITY_EDITOR
+		if(activeScreen.DebugModus)
+			plane.VirtualRegionOnScreen = RealRegionOnScreen;
+#endif
 	}
 	
 	public virtual void createGUIElement(){
@@ -83,7 +88,7 @@ public class Panel : Frame {
 			return;
 		}
 		
-		GUIPlane plane = go.GetComponent<GUIPlane>();
+		plane = go.GetComponent<GUIPlane>();
 		if(plane == null){
 			Debug.LogError("No GUIPlane found on Object "+ this.gameObject.name + "! Stop!");
 			return;
@@ -93,15 +98,15 @@ public class Panel : Frame {
 		plane.name = gameObject.name + "_guiPlane";
 		plane.transform.parent = cam.transform;
 				
-		resetPlaneTransform(plane);
+		resetPlaneTransform();
 		
-		plane.transform.position = new Vector3(0,0,activeScreen.ScreenCamera.nearClipPlane);
+		plane.transform.position = new Vector3(0,0,(activeScreen.ScreenCamera.nearClipPlane));
 		plane.transform.LookAt(cam.transform);
 		
 		//Debug.Log("Material: " + activeScreen.GUIMaterial.name);
 		plane.GUIMaterial = activeScreen.GUIMaterial;
 		plane.UV = Uv;
-		//plane.VirtualPositionOnScreen = VirtualPositionOnScreen;
+		plane.VirtualRegionOnScreen = RealRegionOnScreen;
 		
 		
 		
@@ -123,7 +128,7 @@ public class Panel : Frame {
 		inactiveStyle.normal = Style.normal;
 	}
 	
-	private void resetPlaneTransform(GUIPlane plane){
+	private void resetPlaneTransform(){
 		plane.transform.rotation = Quaternion.identity;
 		plane.transform.localRotation = Quaternion.identity;
 		plane.transform.position = Vector3.zero;

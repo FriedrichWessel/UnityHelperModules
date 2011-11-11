@@ -17,7 +17,7 @@ public class CameraScreen : Frame {
 	//  Propertys
 	public static Vector2 mousePosition{
 		get{
-			return NormalizeMousePosition(Input.mousePosition); 
+			return NormalizeScreenPosition(Input.mousePosition); 
 		}
 	}
 	
@@ -57,10 +57,13 @@ public class CameraScreen : Frame {
 		//LayoutElement();
 	}
 	
-	public override void LayoutElement(){
-		base.LayoutElement();
+	void Update(){
 		if(DebugModus)
 			CalculatePhysicalRegion();
+	}
+	public override void LayoutElement(){
+		base.LayoutElement();
+		CalculatePhysicalRegion();
 		createElements();
 		
 	}
@@ -154,13 +157,13 @@ public class CameraScreen : Frame {
 		
 	}
 	
-	private static Vector3 NormalizeMousePosition(Vector2 mousePosition){
+	public static Vector3 NormalizeScreenPosition(Vector2 screenPosition){
 		float factorY = (float)(Screen.height) / (float)(ScreenConfig.TargetScreenHeight); 
 		float factorX = (float)(Screen.width) / (float)(ScreenConfig.TargetScreenWidth);
-		mousePosition.y = Screen.height - mousePosition.y;
-		mousePosition.x /= factorX;
-		mousePosition.y /= factorY;
-		return mousePosition;
+		screenPosition.y = Screen.height - screenPosition.y;
+		screenPosition.x /= factorX;
+		screenPosition.y /= factorY;
+		return screenPosition;
 	}
 	
 	
