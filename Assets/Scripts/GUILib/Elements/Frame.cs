@@ -28,6 +28,10 @@ public class Frame : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void Update () {
+		UpdateOverride();
+	}
+	
+	protected virtual void UpdateOverride(){
 		controlerManager.Update(this);
 	}
 	

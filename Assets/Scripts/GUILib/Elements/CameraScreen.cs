@@ -44,7 +44,6 @@ public class CameraScreen : Frame {
 		
 	}
 	
-	
 	private void initEvents(){
 		InputEvents.Instance.ClickEvent += OnClick;	
 		InputEvents.Instance.MoveEvent += OnMove;
@@ -53,13 +52,17 @@ public class CameraScreen : Frame {
 		InputEvents.Instance.UpEvent += OnUp;
 	}
 	
-	void OnGUI(){
-		//LayoutElement();
-	}
 	
 	void Update(){
+		UpdateOverride();
+	}
+	
+	protected override void UpdateOverride(){
+		base.UpdateOverride();
+#if UNITY_EDITOR
 		if(DebugModus)
 			CalculatePhysicalRegion();
+#endif
 	}
 	public override void LayoutElement(){
 		base.LayoutElement();
@@ -70,7 +73,7 @@ public class CameraScreen : Frame {
 	
 	
 	public void CalculatePhysicalRegion(){
-		base.LayoutElement();
+		//base.LayoutElement();
 		foreach(Panel box in allChildren){
 			box.RealRegionOnScreen = GetPhysicalRegionFromRect(box.VirtualRegionOnScreen);
 		}

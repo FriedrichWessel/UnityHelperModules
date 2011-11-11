@@ -25,7 +25,9 @@ public class Control : Panel {
 	
 	public override void createGUIElement(){
 		base.createGUIElement();
-
+	}
+	
+	void OnGUI(){
 #if UNITY_EDITOR
 		if(ShowActiveRegion){
 			initActiveRegion();

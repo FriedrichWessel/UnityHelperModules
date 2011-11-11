@@ -64,11 +64,9 @@ public class InputEvents : MonoBehaviour{
 					clickStart(touch.fingerId);
 				} else if(touch.phase == TouchPhase.Ended){
 					clickEnd(touch.fingerId);
-				}
-				
-					
+				}		
 			}
-		}
+		} 
 	}
 	
 	private void clickStart(int buttonId){
