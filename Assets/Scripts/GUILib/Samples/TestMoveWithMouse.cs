@@ -18,7 +18,7 @@ public class TestMoveWithMouse : InteractionBehaviour {
 	
 	public override void Move(MouseEventArgs mouse){
 		if(down){
-			Box ui = gameObject.GetComponent<Box>();
+			Panel ui = gameObject.GetComponent<Panel>();
 			Vector2 newPosition = new Vector2(ui.VirtualRegionOnScreen.x, ui.VirtualRegionOnScreen.y);
 			newPosition += mouse.MoveDirection;
 			Rect newRegion = new Rect(newPosition.x, newPosition.y, ui.VirtualRegionOnScreen.width, ui.VirtualRegionOnScreen.height);

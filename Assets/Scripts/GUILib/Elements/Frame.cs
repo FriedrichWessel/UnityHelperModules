@@ -6,9 +6,9 @@ using System;
 public class Frame : MonoBehaviour {
 
 	
-	protected List<Box> directChildren;
+	protected List<Panel> directChildren;
 	protected delegate void InteractionEvent(InteractionBehaviour ib);
-	protected delegate void ActionEvent(Box b);
+	protected delegate void ActionEvent(Panel b);
 	
 	protected ControlManager<Frame> controlerManager;
 		
@@ -35,7 +35,7 @@ public class Frame : MonoBehaviour {
 	 * This Function is called by Parent to force the child to arrange them selves 
 	 **/
 	public virtual void LayoutElement(){
-		foreach(Box b in directChildren)
+		foreach(Panel b in directChildren)
 			b.LayoutElement();
 		
 		//do positioning etc. for this class here
@@ -68,7 +68,7 @@ public class Frame : MonoBehaviour {
 	
 	
 	protected virtual void callHandler(InteractionEvent interaction, ActionEvent action){
-		foreach(Box b in directChildren){
+		foreach(Panel b in directChildren){
 			if(b.checkMouseOverElement()){
 				action(b);
 				InteractionBehaviour[] behaviours = b.GetComponents<InteractionBehaviour>() as InteractionBehaviour[];
@@ -85,9 +85,9 @@ public class Frame : MonoBehaviour {
 
 	
 	private void initDirectChildren(){
-		directChildren = new List<Box>();
+		directChildren = new List<Panel>();
 		foreach(Transform child in transform){
-			Box b = child.GetComponent<Box>();
+			Panel b = child.GetComponent<Panel>();
 			if(b != null)
 				directChildren.Add(b);
 		}

@@ -7,7 +7,9 @@ public class CameraScreen : Frame {
 	// If DebugModus is checked, ScreenPosition is update every OnGUI call this is usefull for positioning elements
 	// but not good for the framerate
 	public bool DebugModus;
-
+	
+	public Material GUIMaterial;
+	
 	// Public Member - init in the inspector
 	public Camera ScreenCamera;
 	
@@ -19,9 +21,9 @@ public class CameraScreen : Frame {
 		}
 	}
 	
-	private Box[] allChildren{
+	private Panel[] allChildren{
 		get{
-			return (gameObject.GetComponentsInChildren<Box>() as Box[]);
+			return (gameObject.GetComponentsInChildren<Panel>() as Panel[]);
 		}
 	}
 	
@@ -37,6 +39,7 @@ public class CameraScreen : Frame {
 	void Start(){
 		CalculatePhysicalRegion();
 		initEvents();
+		LayoutElement();
 		
 		
 	}
@@ -51,7 +54,7 @@ public class CameraScreen : Frame {
 	}
 	
 	void OnGUI(){
-		LayoutElement();
+		//LayoutElement();
 	}
 	
 	public override void LayoutElement(){
@@ -65,7 +68,7 @@ public class CameraScreen : Frame {
 	
 	public void CalculatePhysicalRegion(){
 		base.LayoutElement();
-		foreach(Box box in allChildren){
+		foreach(Panel box in allChildren){
 			box.RealRegionOnScreen = GetPhysicalRegionFromRect(box.VirtualRegionOnScreen);
 		}
 		
@@ -106,7 +109,7 @@ public class CameraScreen : Frame {
 	}
 	
 	private void createElements(){
-		foreach(Box box in allChildren){
+		foreach(Panel box in allChildren){
 			box.createGUIElement();
 		}
 	}

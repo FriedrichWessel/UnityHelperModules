@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Control : Box {
+public class Control : Panel {
 
 	// Show Active Region is an Debug Option that makes the active array visible
 	public bool ShowActiveRegion = false;

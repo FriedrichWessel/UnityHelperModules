@@ -4,7 +4,7 @@ using System.Collections;
 public class TestUIControllerBehaviour : InteractionBehaviour {
 
 	private SampleUIController controller;
-	void AwakeOverride(){
+	protected override void AwakeOverride(){
 		base.AwakeOverride();
 		controller = new SampleUIController();
 		

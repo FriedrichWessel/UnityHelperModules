@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class Box : Frame {
+public class Panel : Frame {
 
 	public enum HorizontalFloatPositions {left, right, none}
 	public enum VerticalFloatPositions {top, bottom, none}
@@ -11,6 +11,8 @@ public class Box : Frame {
 	public int layer;
 	public VerticalFloatPositions verticalFloat;
 	public HorizontalFloatPositions horizontalFloat;
+	
+	public Rect Uv;
 	
 	public GUIStyle Style; 
 	
@@ -75,7 +77,34 @@ public class Box : Frame {
 	}
 	
 	public virtual void createGUIElement(){
-		UnityEngine.GUI.Box(RealRegionOnScreen,"", currentStyle);	
+		GameObject go = ResourceManager.CreateInstance<GameObject>("guiPlane");
+		if(go == null){
+			Debug.LogError("No GameObject found for Plane on Object "+ this.gameObject.name + "! Stop!");
+			return;
+		}
+		
+		GUIPlane plane = go.GetComponent<GUIPlane>();
+		if(plane == null){
+			Debug.LogError("No GUIPlane found on Object "+ this.gameObject.name + "! Stop!");
+			return;
+		}
+		
+		Camera cam = activeScreen.ScreenCamera; 
+		plane.name = gameObject.name + "_guiPlane";
+		plane.transform.parent = cam.transform;
+				
+		resetPlaneTransform(plane);
+		
+		plane.transform.position = new Vector3(0,0,activeScreen.ScreenCamera.nearClipPlane);
+		plane.transform.LookAt(cam.transform);
+		
+		//Debug.Log("Material: " + activeScreen.GUIMaterial.name);
+		plane.GUIMaterial = activeScreen.GUIMaterial;
+		plane.UV = Uv;
+		//plane.VirtualPositionOnScreen = VirtualPositionOnScreen;
+		
+		
+		
 	}
 	
 	public virtual  bool checkMouseOverElement(){
@@ -92,6 +121,13 @@ public class Box : Frame {
 	protected virtual void initStyle(){
 		inactiveStyle = new GUIStyle();
 		inactiveStyle.normal = Style.normal;
+	}
+	
+	private void resetPlaneTransform(GUIPlane plane){
+		plane.transform.rotation = Quaternion.identity;
+		plane.transform.localRotation = Quaternion.identity;
+		plane.transform.position = Vector3.zero;
+		plane.transform.localScale = Vector3.one;
 	}
 	
 	
