@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using Pux.Controllers;
 
 public class Frame : MonoBehaviour
 {
@@ -68,10 +69,7 @@ public class Frame : MonoBehaviour
 	protected virtual void AwakeOverride() {
 		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
 		
-		if(gameObject.transform.parent == null)
-			parent = this;
-		else
-			parent = gameObject.transform.parent.GetComponent<Frame>() as Frame;
+		UpdateParent();
 		if(FullscreenElement){
 			VirtualRegionOnScreen.width = ScreenConfig.Instance.TargetScreenWidth;//Screen.width;
 			VirtualRegionOnScreen.height = ScreenConfig.Instance.TargetScreenHeight;//Screen.height;
@@ -81,6 +79,13 @@ public class Frame : MonoBehaviour
 		
 		initDirectChildren();
 		
+	}
+	
+	public void UpdateParent(){
+		if(gameObject.transform.parent == null)
+			parent = this;
+		else
+			parent = gameObject.transform.parent.GetComponent<Frame>() as Frame;
 	}
 
 	void Start() {
@@ -165,14 +170,30 @@ public class Frame : MonoBehaviour
 	public virtual void UpdateElement(){
 		
 		//base.UpdateElement();
+		
+		//EditorDebug.LogWarning("Update Element: " + gameObject.name);
 		UpdateDirectChildren();
 		
 		
+		// Get RealRegion
 		if(activeScreen != null)
 			this.RealRegionOnScreen = activeScreen.GetPhysicalRegionFromRect(this.VirtualRegionOnScreen, KeepAspectRatio);
 		
+		
+		
+			
+		//Check for Flaoting
+		//this.RealRegionOnScreen = this.RealRegionOnScreen.AddPosition(GetFloatingPosition());
 		var position = GetFloatingPosition();
 		this.RealRegionOnScreen = new Rect(position.x, position.y, RealRegionOnScreen.width, RealRegionOnScreen.height);
+		
+		
+		// Move Parent Offset
+	
+		position = new Vector2(parent.RealRegionOnScreen.x + this.RealRegionOnScreen.x, parent.RealRegionOnScreen.y + this.RealRegionOnScreen.y);
+		this.RealRegionOnScreen = new Rect(position.x, position.y, RealRegionOnScreen.width, RealRegionOnScreen.height);
+		
+		
 		UpdateRegionOnScreen();
 		
 		foreach (var frame in directChildren){
@@ -206,7 +227,7 @@ public class Frame : MonoBehaviour
 	}
 	
 	private float getVerticalFloatPosition(){
-		float ret = RealRegionOnScreen.y + parent.RealRegionOnScreen.y;
+		float ret = RealRegionOnScreen.y ;
 		switch(verticalFloat){
 			case VerticalFloatPositions.none:
 			break;
@@ -214,10 +235,10 @@ public class Frame : MonoBehaviour
 				ret =  0.0f;
 			break;
 			case VerticalFloatPositions.bottom:
-				ret =  (parent.RealRegionOnScreen.height - this.RealRegionOnScreen.height) + parent.RealRegionOnScreen.y;
+				ret =  (parent.RealRegionOnScreen.height - this.RealRegionOnScreen.height);
 			break;
 			case VerticalFloatPositions.center:
-				ret =  (parent.RealRegionOnScreen.height/2 - this.RealRegionOnScreen.height/2) + parent.RealRegionOnScreen.y;
+				ret =  (parent.RealRegionOnScreen.height/2 - this.RealRegionOnScreen.height/2);
 			break;
 			default:
 				EditorDebug.LogError("Unknown VerticalPosition: " + verticalFloat);
@@ -227,7 +248,7 @@ public class Frame : MonoBehaviour
 	}
 	
 	private float getHorizontalFloatPosition(){
-		float ret = RealRegionOnScreen.x+ parent.RealRegionOnScreen.x;
+		float ret = RealRegionOnScreen.x;
 		switch(horizontalFloat){
 			case HorizontalFloatPositions.none:
 			break;
@@ -235,10 +256,10 @@ public class Frame : MonoBehaviour
 				ret = 0.0f;
 			break;
 			case HorizontalFloatPositions.right:
-				ret = (parent.RealRegionOnScreen.width - this.RealRegionOnScreen.width) + parent.RealRegionOnScreen.x;
+				ret = (parent.RealRegionOnScreen.width - this.RealRegionOnScreen.width);
 			break;
 			case HorizontalFloatPositions.center:
-				ret = (parent.RealRegionOnScreen.width/2 - this.RealRegionOnScreen.width/2)+ parent.RealRegionOnScreen.x;
+				ret = (parent.RealRegionOnScreen.width/2 - this.RealRegionOnScreen.width/2);
 			break;
 			default:
 				EditorDebug.LogError("Unknown HorizontalPosition: " + horizontalFloat);
