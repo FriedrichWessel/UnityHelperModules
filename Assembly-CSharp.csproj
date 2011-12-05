@@ -18,7 +18,7 @@
 	<DebugType>full</DebugType>
 	<Optimize>false</Optimize>
 	<OutputPath>Temp\bin\Debug\</OutputPath>
-	<DefineConstants>DEBUG;TRACE;UNITY_3_4_0;UNITY_3_4;UNITY_EDITOR;ENABLE_PROFILER;UNITY_STANDALONE_OSX;ENABLE_GENERICS;ENABLE_DUCK_TYPING;ENABLE_TERRAIN;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CLOTH;ENABLE_WWW</DefineConstants>
+	<DefineConstants>DEBUG;TRACE;UNITY_3_4_2;UNITY_3_4;UNITY_EDITOR;ENABLE_PROFILER;UNITY_STANDALONE_OSX;ENABLE_GENERICS;ENABLE_DUCK_TYPING;ENABLE_TERRAIN;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CLOTH;ENABLE_WWW</DefineConstants>
 	<ErrorReport>prompt</ErrorReport>
 	<WarningLevel>4</WarningLevel>
 	<NoWarn>0169</NoWarn>
@@ -45,33 +45,46 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Misc\Menu.cs" />
-     <Compile Include="Assets\Scripts\Facebook.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Behaviours\HorizontalLayoutBehaviour.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Behaviours\ILayoutBehaviour.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Behaviours\InteractionBehaviour.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Behaviours\LayoutBehaviour.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Behaviours\VerticalLayoutBehaviour.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Configs\ScreenConfig.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Elements\Button.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Elements\CameraScreen.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Elements\Control.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Elements\Frame.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Elements\GUIPlane.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Elements\Panel.cs" />
-     <Compile Include="Assets\Scripts\GUILib\EventArgs\MouseEventArgs.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Samples\SampleUIController.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Samples\TestAllInteractionsBehaviour.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Samples\TestMoveWithMouse.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Samples\TestUIControllerBehaviour.cs" />
-     <Compile Include="Assets\Scripts\GUILib\Wrapper\InputEvents.cs" />
-     <Compile Include="Assets\Scripts\General\ControlManager.cs" />
-     <Compile Include="Assets\Scripts\General\Controller.cs" />
-     <Compile Include="Assets\Scripts\General\Samples\BehaviourEventArgs.cs" />
-     <Compile Include="Assets\Scripts\General\Samples\SampleMovementController.cs" />
-     <Compile Include="Assets\Scripts\General\TimeBehaviour.cs" />
-     <Compile Include="Assets\Scripts\General\Timer.cs" />
-     <Compile Include="Assets\Scripts\ResourceManager\ResourceLoadingBehaviour.cs" />
-     <Compile Include="Assets\Scripts\ResourceManager\ResourceManager.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Behaviours\AnimatedUVBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Behaviours\HorizontalLayoutBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Behaviours\ILayoutBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Behaviours\InteractionBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Behaviours\LayoutBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Behaviours\UVMoveBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Behaviours\VerticalLayoutBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Configs\ScreenConfig.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\AlertTextPanel.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\Button.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\CameraScreen.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\Control.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\FPSPanel.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\Frame.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\GUIPlane.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\Panel.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Elements\TextPanel.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\EventArgs\MouseEventArgs.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Samples\SampleUIController.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Samples\TestAllInteractionBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Samples\TestAllInteractionsBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Samples\TestMoveWithMouse.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Samples\TestSwipeBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Samples\TestUIControllerBehaviour.cs" />
+     <Compile Include="Assets\Scripts\GUI_Module\Wrapper\InputEvents.cs" />
+     <Compile Include="Assets\Scripts\General_Module\ControlManager.cs" />
+     <Compile Include="Assets\Scripts\General_Module\Controller.cs" />
+     <Compile Include="Assets\Scripts\General_Module\EditorDebug.cs" />
+     <Compile Include="Assets\Scripts\General_Module\Resource_Module\ResourceLoadingBehaviour.cs" />
+     <Compile Include="Assets\Scripts\General_Module\Resource_Module\ResourceManager.cs" />
+     <Compile Include="Assets\Scripts\General_Module\Time_Module\TimeBehaviour.cs" />
+     <Compile Include="Assets\Scripts\General_Module\Time_Module\Timer.cs" />
+     <Compile Include="Assets\Scripts\Samples\BehaviourEventArgs.cs" />
+     <Compile Include="Assets\Scripts\Samples\SampleMovementController.cs" />
+     <Compile Include="Assets\Scripts\Storage_Module\LocalStorage.cs" />
+     <Compile Include="Assets\Scripts\Unity_Extensions\_FloatExtensions.cs" />
+     <Compile Include="Assets\Scripts\Unity_Extensions\_RectExtension.cs" />
+     <Compile Include="Assets\Scripts\Unity_Extensions\_Vector2Extensions.cs" />
+     <Compile Include="Assets\Scripts\Unity_Extensions\_Vector3Extensions.cs" />
+     <Compile Include="Assets\Scripts\Web_Module\Facebook.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
