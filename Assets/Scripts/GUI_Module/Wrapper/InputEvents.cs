@@ -7,7 +7,7 @@ public class InputEvents : MonoBehaviour{
 
 	
 	//public float ClickTimeInSeconds = 0.1f;
-	public float MaxClickDistance = 0.1f;
+	//public float MaxClickDistance = 0.1f;
 	
 	public static InputEvents Instance;
 	
@@ -19,6 +19,7 @@ public class InputEvents : MonoBehaviour{
 	
 	//private Timer clickTimer;
 	private Dictionary<int,bool> clickStarted;
+	private Dictionary<int,double> clickStartTime;
 	private Vector2 mouseStartPosition;
 	
 	private Vector2 mousePosition;
@@ -27,6 +28,7 @@ public class InputEvents : MonoBehaviour{
 	void Awake(){
 		Instance = this;
 		clickStarted = new Dictionary<int, bool>();
+		clickStartTime = new Dictionary<int, double>();
 		actualMouseDirection = new Vector2(0,0);
 		mousePosition = new Vector2(0,0);
 		mouseStartPosition = new Vector2(0,0);
@@ -85,35 +87,51 @@ public class InputEvents : MonoBehaviour{
 		InvokeDownEvent(buttonId);
 		//clickTimer.StartTimer(ClickTimeInSeconds);
 		mouseStartPosition = mousePosition;
-		setClickValue(buttonId, true);
+		setIsDown(buttonId, true);
+		setButtonDownTime(buttonId, Time.timeSinceLevelLoad);
 	}
 	
-	private void setClickValue(int key,bool value){
+	private void setIsDown(int key,bool value){
 		if(clickStarted.ContainsKey(key)){
 			clickStarted[key] = value;
 		} else
 			clickStarted.Add(key, value);
 	}
 	
-	private bool getClickValue(int key){
+	private bool getIsDown(int key){
 		if(clickStarted.ContainsKey(key)){
 			return clickStarted[key];
 		}
 		return false;
 	}
 	
+	private void setButtonDownTime(int key, double time){
+		if(clickStartTime.ContainsKey(key)){
+			clickStartTime[key] = time;
+		} else
+			clickStartTime.Add(key, time);
+	}
+	
+	private double getButtonDownTime(int key){
+		if(clickStartTime.ContainsKey(key)){
+			return Time.timeSinceLevelLoad - clickStartTime[key];
+		}
+		return 0.0;
+	}
+	
+	
 	private void clickEnd(int buttonId){
 		InvokeUpEvent(buttonId);
-		if(getClickValue(buttonId)){
+		if(getIsDown(buttonId)){
 			Vector2 moveDirection = mousePosition - mouseStartPosition;
 			float clickDistance = moveDirection.magnitude;
-			if(clickDistance <= MaxClickDistance){
+			if(clickDistance <= ScreenConfig.Instance.SwipeMinDistance || getButtonDownTime(buttonId) <= ScreenConfig.Instance.SwipeMinTime){
 				InvokeClickEvent(buttonId);
 			} else{ // Swipe detected
-				InvokeSwipeEvent(moveDirection);
+					InvokeSwipeEvent(moveDirection);
 			}
 			
-			setClickValue(buttonId, false);
+			setIsDown(buttonId, false);
 			
 		}
 	}
