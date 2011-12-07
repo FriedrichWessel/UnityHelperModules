@@ -5,6 +5,9 @@ public class ScreenConfig : MonoBehaviour {
 
 	public int TargetScreenWidth = 960;
 	public int TargetScreenHeight = 640;
+	public double SwipeMinTime = 0.01;
+	public float SwipeMinDistance = 150;
+	
 	public float ScreenAspect{
 		get;
 		private set;
