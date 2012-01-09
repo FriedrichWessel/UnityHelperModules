@@ -24,6 +24,7 @@ public class InputEvents : MonoBehaviour{
 	
 	private Vector2 mousePosition;
 	private Vector2 actualMouseDirection;
+	private bool mouseDownToggle = true;
 	
 	void Awake(){
 		Instance = this;
@@ -41,10 +42,10 @@ public class InputEvents : MonoBehaviour{
 	
 	void Update(){
 		checkMove();
-#if UNITY_IPHONE || UNITY_ANDROID
+#if UNITY_IPHONE || UNITY_ANDROID || UNITY_STANDALONE_WIN
 		checkTouches();
 #endif
-#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_WIN || UNITY_WEBPLAYER || UNITY_EDITOR
+#if UNITY_STANDALONE_OSX ||  UNITY_WEBPLAYER || UNITY_EDITOR || UNITY_STANDALONE_WIN
 		checkClick();
 #endif
 		
@@ -57,22 +58,62 @@ public class InputEvents : MonoBehaviour{
 		
 		actualMouseDirection = new Vector2(mousePosition.x - oldMouse.x, oldMouse.y - mousePosition.y); 
 		if(actualMouseDirection.magnitude != 0)
-			InvokeMoveEvent(actualMouseDirection);
+			InvokeMoveEvent(actualMouseDirection, mousePosition);
 		
 	}
+	
 	private void checkClick(){
-		if(Input.touches.Length > 0)
+		
+		if(Input.touches.Length > 0){
+			//EditorDebug.LogError("Touch Detected");
 			return;
-		if(Input.GetMouseButtonDown(0)){
-			clickStart(0);
-		} else if(Input.GetMouseButtonUp(0)){
-			clickEnd(0);
 		}
+			
+		/*if(Input.GetMouseButtonDown(0)){
+			EditorDebug.LogError("Button0 Down");
+			clickStart(0);
+		} else if(getIsDown(0) && (Input.GetMouseButtonUp(0) || !Input.GetMouseButtonDown(0)) ){
+			EditorDebug.LogError("Button0 Up");
+			clickEnd(0);
+		}*/
+		// Diese unglaublichen If abfragen sind nötig, da sich die Unity mit windows Touch anders verhält als
+		// mit der Maus oder anderen Touchdevices
+		// Unter windows gilt folgendes: Bei FingerDown sind sowohl down und Up der Mouse False
+		// sobald die Maus bewegt wird gitb ButtonDown true zurück 
+		// wenn man ohne die Maus zu bewegen direkt den Finger wieder hochnimmt sind down und Up true
+		// Der Touch wird aber als Maus behandelt - die Input.Touches ist auf jeden Fall leer
+		if(Input.GetMouseButtonDown(0) && Input.GetMouseButtonUp(0)){
+			//EditorDebug.LogError("0 both");
+			clickStart(0);
+			clickEnd(0);	
+			
+		}
+		else if(Input.GetMouseButtonDown(0)){
+			//EditorDebug.LogError("0 down");
+			clickStart(0);
+		}
+			
+		else if(Input.GetMouseButtonUp(0)){
+			//EditorDebug.LogError("0 up");
+			clickEnd(0);
+			
+		}
+			
+		else if(!Input.GetMouseButtonDown(0) && !Input.GetMouseButtonUp(0)){
+			//EditorDebug.LogError("0 nix");
+		}
+			
+		
+			
+
+
+		
 	}
 	
 	private void checkTouches(){
 		Touch[] touches = Input.touches;
 		if(touches.Length > 0 ){
+			EditorDebug.LogWarning("Touches Length > 0");
 			foreach(Touch touch in touches){
 				if(touch.phase == TouchPhase.Began){
 					clickStart(touch.fingerId);
@@ -84,6 +125,7 @@ public class InputEvents : MonoBehaviour{
 	}
 	
 	private void clickStart(int buttonId){
+		//EditorDebug.LogError("ClickStart");
 		InvokeDownEvent(buttonId);
 		//clickTimer.StartTimer(ClickTimeInSeconds);
 		mouseStartPosition = mousePosition;
@@ -121,6 +163,7 @@ public class InputEvents : MonoBehaviour{
 	
 	
 	private void clickEnd(int buttonId){
+		//EditorDebug.LogError("ClickEnd");
 		InvokeUpEvent(buttonId);
 		if(getIsDown(buttonId)){
 			Vector2 moveDirection = mousePosition - mouseStartPosition;
@@ -164,13 +207,14 @@ public class InputEvents : MonoBehaviour{
 		handler(this, e);
 	}
 
-	private void InvokeMoveEvent(Vector2 direction){
+	private void InvokeMoveEvent(Vector2 direction, Vector2 currentMousePosition){
 		var handler = MoveEvent;
 		if (handler == null){
 			return;
 		}
 		var e = new MouseEventArgs(direction);
 		e.MouseDown = clickStarted;
+		e.MousPosition = currentMousePosition;
 		handler(this, e);
 	}
 	

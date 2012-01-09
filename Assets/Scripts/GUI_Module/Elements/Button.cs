@@ -10,7 +10,7 @@ public class Button : Control {
 	public bool ConstantHover;
 	public bool ConstantActive;
 	
-	private bool down = false;
+	protected bool down = false;
 	
 	
 	public override void OnClick(object sender, MouseEventArgs e){
@@ -20,16 +20,19 @@ public class Button : Control {
 	
 	public override void OnDown(object sender, MouseEventArgs e){
 		
-		base.OnDown(sender,e);
-		down = true;
-		plane.UV = activeUV;
+			base.OnDown(sender,e);
+			down = true;
+			plane.UV = activeUV;	
+		
+		
 	}
 	
 	public override void OnUp(object sender, MouseEventArgs e){
-		
-		base.OnUp(sender,e);
-		down = false;
-		plane.UV = Uv;
+		if(down){	
+			base.OnUp(sender,e);
+			down = false;
+			plane.UV = Uv;
+		}
 	}
 	
 	public override void OnHover(object sender, MouseEventArgs e){

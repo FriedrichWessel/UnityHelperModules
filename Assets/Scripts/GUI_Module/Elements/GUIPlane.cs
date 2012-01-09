@@ -2,10 +2,9 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class GUIPlane : MonoBehaviour {
+public class GUIPlane : GUIGameObject {
 
-	private float textureFactor = 1.0f;
-	private CameraScreen activeScreen;
+	
 	
 	public Vector2 RotationCenter {
 		get;
@@ -17,22 +16,35 @@ public class GUIPlane : MonoBehaviour {
 		set;
 	}
 	
-	void Awake(){
-		//updateTextureFactor();
+	// Use this for initialization
+	void Start () {
+		StartOverride();
 	}
-	void Start(){
+	// Update is called once per frame
+	void Update () {
+		UpdateOverride();
+	}
+	void Awake(){
+		AwakeOverride();
+	}
+	
+	
+	protected override void StartOverride(){
+		base.StartOverride();
 		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
 		if(activeScreen == null)
 			EditorDebug.LogWarning("No activeScreen found on GUIPlane: " + gameObject.name);
 		updateTextureFactor();
 	}
 	
-	public Mesh MeshObject{
-		get{
-			return GetComponent<MeshFilter>().mesh;
-		}
+	protected override void UpdateOverride(){
+		base.UpdateOverride();
 	}
 	
+	protected override void AwakeOverride(){
+		base.AwakeOverride();
+	}
+		
 	private Vector2 RotateVertex(Vector2 vertex, Vector2 center, float degrees){
 		var centeredScreen = vertex - center;
 		return centeredScreen.Rotate(degrees) + center;
@@ -64,14 +76,7 @@ public class GUIPlane : MonoBehaviour {
 		}	
 		
 	}
-	public Material GUIMaterial{
-		get{
-			return renderer.sharedMaterial;
-		}
-		set{
-			renderer.sharedMaterial = value;
-		}
-	}
+
 	
 	//public Rect VirtualPosition
 	public Rect UV{
@@ -93,48 +98,7 @@ public class GUIPlane : MonoBehaviour {
 	}
 	
 	
-	public Vector3 ScreenToWorldCoordinates(Vector2 screenCoordinate){
-		
-		Camera cam = transform.parent.GetComponent<Camera>();
-		if(cam == null){
-			EditorDebug.LogError("No camera found on Object: " + gameObject.name);
-			throw new MissingComponentException("No camera found on Object: " + gameObject.name);
-		}
-		
-		Ray r = cam.ScreenPointToRay(screenCoordinate);
-		EditorDebug.DrawRay(r.origin, r.direction);
-		// Switch x because Plane is looking at camera - so coordinate system is opposite, switching y because Camera has inverted space
-		// in y in comparison to World
-		//EditorDebug.Log("Origin: " + r.origin);
-		//var ret = new Vector3(r.origin.x, r.origin.y*-1, 0);
-		var ret = r.origin;
-		return ret;
-		
-	}
 	
-	public Vector3 WorldToLocalCoordinates(Vector3 worldCoordinates){
-		return gameObject.transform.InverseTransformPoint(worldCoordinates);
-	}
-	
-	private Vector2 toUVSpace(Vector2 xy){
-		if(xy.x < 1 && xy.y < 1)
-			return xy;
-		
-		if(GUIMaterial == null)
-			EditorDebug.LogWarning("Material : " + GUIMaterial + " on Object: " + gameObject.name);
-		
-		Texture t = GUIMaterial.GetTexture("_MainTex");
-		var p = new Vector2(xy.x / ((float)t.width), xy.y / ((float)t.height));
-		return p;
-	}
-	
-	private void updateTextureFactor(){
-		if(GUIMaterial != null && activeScreen != null){
-			Texture t = GUIMaterial.GetTexture("_MainTex");
-			textureFactor = (float)(t.width) / activeScreen.TextureSize;
-		}
-		
-	}
 
 
 }

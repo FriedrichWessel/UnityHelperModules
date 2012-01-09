@@ -56,6 +56,11 @@ public class Control : Panel {
 	}
 	// Caclulate the Absolute Values on the physical screen - because ActiveRegion is virtual an relative to the Control Position
 	private void initActiveRegion(){
+		if(activeScreen == null){
+			EditorDebug.LogWarning("ActiveScreen is not set on Object: " + gameObject.name);
+			return;
+		}
+			
 		var activeRegion = activeScreen.GetPhysicalRegionFromRect(ActiveRegion, KeepAspectRatio);
 		realActiveRegion = new Rect(RealRegionOnScreen.x + activeRegion.x , RealRegionOnScreen.y + activeRegion.y, activeRegion.width, activeRegion.height);
 		/*realActiveRegion = new Rect(VirtualRegionOnScreen.x+ ActiveRegion.x, 

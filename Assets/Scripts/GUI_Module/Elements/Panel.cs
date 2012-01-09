@@ -8,20 +8,27 @@ public class Panel : Frame {
 	
 	public LayoutBehaviour Layout;
 	public string help1 = "NOT WORKING LIVE:";
-	public int GUIDepth = 1;
+	public int GUIDepth = 5;
 	
 	//public bool FullscreenElement = false;
 	
-	public bool Visibility{
+	public override bool Visibility{
 		get{
-			bool flag = false;
-			if(plane != null)
+			bool flag = currentVisibility;
+			if(plane != null){
 				flag = plane.renderer.enabled;
+				currentVisibility = flag;
+			}
+				
 			return flag;
 		}
 		set{
-			if(plane != null)
+			
+			if(plane != null){
 				plane.renderer.enabled = value;
+				EditorDebug.Log("Change vis for: " + gameObject.name + " to " + value);
+			}
+				
 		}
 	}
 	
@@ -62,8 +69,6 @@ public class Panel : Frame {
 	// Use this for initialization
 	protected override void AwakeOverride(){
 		base.AwakeOverride();
-		//if(!LateCreation)
-			//CreateElement();
 	}
 	
 
@@ -111,13 +116,13 @@ public class Panel : Frame {
 	}
 	
 	
-	
+
 	public override void UpdateRegionOnScreen(){
 		base.UpdateRegionOnScreen();
 		if(plane != null)
 			plane.VirtualRegionOnScreen = RealRegionOnScreen;
 		
-		resetElement();
+		//resetElement();
 	}
 	
 	public virtual void createGUIElement(){
@@ -138,6 +143,7 @@ public class Panel : Frame {
 		plane.GUIMaterial = activeScreen.GUIMaterial;
 		plane.UV = Uv;
 		plane.VirtualRegionOnScreen = RealRegionOnScreen;
+		
 			
 	}
 	
@@ -167,7 +173,7 @@ public class Panel : Frame {
 	}
 	
 	public override  bool checkMouseOverElement(){
-		return CameraScreen.cursorInside(RealRegionOnScreen);
+		return CameraScreen.CursorInsidePhysicalRegion(RealRegionOnScreen);
 	}
 	
 	

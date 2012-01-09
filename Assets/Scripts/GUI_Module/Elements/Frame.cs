@@ -6,12 +6,16 @@ using System;
 
 public class Frame : MonoBehaviour
 {
-	protected List<Frame> directChildren;
+	public List<Frame> DirectChildren{
+		get;
+		protected set;
+	}
 	protected delegate void InteractionEvent(InteractionBehaviour ib);
 	protected delegate void ActionEvent(Frame b);
 	
 	public enum HorizontalFloatPositions {left, right,center, none}
 	public enum VerticalFloatPositions {top, bottom,center, none}
+	public enum ElementOrientation{horizontal, vertical}
 	
 	public Rect VirtualRegionOnScreen; 
 	protected Rect originalVirtualRegionOnScreen;
@@ -23,11 +27,25 @@ public class Frame : MonoBehaviour
 	public bool KeepAspectRatio = true;
 	
 	protected bool created = false;
-	protected bool firstUpdate = true;
+	protected bool firstUpdateFlag = true;
+	protected bool currentVisibility = true;
+	protected bool savedVisibility;
+	
+	protected bool inheritedVisibility = false;
+	
+	
+	public virtual bool Visibility{
+		get{
+			return currentVisibility;
+		}
+		set{
+			currentVisibility = value;
+		}
+	}
 	
 	public CameraScreen activeScreen{
 		get;
-		protected set;
+		set;
 	}
 	
 	public Rect RealRegionOnScreen{
@@ -67,20 +85,24 @@ public class Frame : MonoBehaviour
 
 	// Use this for initialization
 	protected virtual void AwakeOverride() {
-		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
 		
+		Visibility = true;
+		savedVisibility = true;
 		UpdateParent();
 		if(FullscreenElement){
 			VirtualRegionOnScreen.width = ScreenConfig.Instance.TargetScreenWidth;//Screen.width;
 			VirtualRegionOnScreen.height = ScreenConfig.Instance.TargetScreenHeight;//Screen.height;
 		}
-		
+		UpdateActiveScreen();
 		originalVirtualRegionOnScreen = VirtualRegionOnScreen;
 		
 		initDirectChildren();
 		
 	}
 	
+	public void UpdateActiveScreen(){
+		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
+	}
 	public void UpdateParent(){
 		if(gameObject.transform.parent == null)
 			parent = this;
@@ -93,6 +115,7 @@ public class Frame : MonoBehaviour
 	}
 	
 	protected virtual void StartOverride(){
+		Visibility = true;
 	}
 	
 	// Update is called once per frame
@@ -101,6 +124,19 @@ public class Frame : MonoBehaviour
 	}
 
 	protected virtual void UpdateOverride() {
+		if(firstUpdateFlag){
+			firstUpdateFlag = false;
+			firstUpdate();
+		}
+#if UNITY_EDITOR
+		if(activeScreen.DebugModus)
+			UpdateElement();
+#endif	
+		
+	}
+	
+	
+	protected virtual void firstUpdate(){
 		// nothing here
 	}
 
@@ -140,7 +176,7 @@ public class Frame : MonoBehaviour
 	}
 
 	protected virtual void callHandler(InteractionEvent interaction, ActionEvent action) {
-		foreach (Frame b in directChildren) {
+		foreach (Frame b in DirectChildren) {
 			if(b == null)
 				continue;
 			if (b.checkMouseOverElement()) {
@@ -173,7 +209,8 @@ public class Frame : MonoBehaviour
 		
 		//EditorDebug.LogWarning("Update Element: " + gameObject.name);
 		UpdateDirectChildren();
-		
+		UpdateParent();
+		//activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
 		
 		// Get RealRegion
 		if(activeScreen != null)
@@ -196,7 +233,11 @@ public class Frame : MonoBehaviour
 		
 		UpdateRegionOnScreen();
 		
-		foreach (var frame in directChildren){
+		
+	
+		updateVisibiltyAfterParent();	
+		
+		foreach (var frame in DirectChildren){
 			frame.UpdateElement();
 		}	
 		
@@ -206,6 +247,20 @@ public class Frame : MonoBehaviour
 		}*/	
 	}
 	
+	protected void updateVisibiltyAfterParent(){
+		if(!parent.Visibility){
+			savedVisibility = this.Visibility;
+			this.Visibility = false;
+			inheritedVisibility = true;
+			EditorDebug.Log("Save VIs: " + savedVisibility + " " + gameObject.name);
+		}
+		if(parent.Visibility && inheritedVisibility){
+			EditorDebug.Log("Load VIs: " + savedVisibility + " " + gameObject.name);
+			this.Visibility = savedVisibility;
+			
+		}
+			
+	}
 	public void removeFloat(){
 		var realPosition = new Vector2(this.RealRegionOnScreen.x, this.RealRegionOnScreen.y);
 		this.Position = CameraScreen.PhysicalToVirtualScreenPosition(realPosition);
@@ -225,7 +280,9 @@ public class Frame : MonoBehaviour
 		
 		return ret;
 	}
+
 	
+
 	private float getVerticalFloatPosition(){
 		float ret = RealRegionOnScreen.y ;
 		switch(verticalFloat){
@@ -279,7 +336,7 @@ public class Frame : MonoBehaviour
 		RealRegionOnScreen = new Rect(0,0,0,0);
 		UpdateDirectChildren();
 		UpdateElement();
-		foreach (var frame in directChildren){
+		foreach (var frame in DirectChildren){
 			frame.CreateElement();
 		}
 		created = true;
@@ -293,11 +350,11 @@ public class Frame : MonoBehaviour
 	}
 	
 	private void initDirectChildren() {
-		directChildren = new List<Frame>();
+		DirectChildren = new List<Frame>();
 		foreach (Transform child in transform) {
 			var b = child.GetComponent<Frame>();
 			if (b != null){
-				directChildren.Add(b);
+				DirectChildren.Add(b);
 			}
 				
 		}

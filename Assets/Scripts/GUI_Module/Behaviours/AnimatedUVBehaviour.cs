@@ -4,18 +4,19 @@ using System.Collections;
 public class AnimatedUVBehaviour : UVMoveBehaviour {
 
 	public int MovieSpeedFPS;
-	public int FrameSize;
-	public int FramesPerRow;
+	public int FrameSizeX;
+	public int FrameSizeY;
+	public int TotalFramesCount;
 	public int RowCount;
-	public int FramesPerTexture;
+	public int ColumnCount;
 	public Texture2D[] Textures;
 	
 	private float frameTime;
 	private int currentFrameNumber;
-	private int frameCount;
 	private int currentRow;
 	private int currentColoum;
 	private int currentTexture;
+	private int framesPerTexture;
 	//private int textureSize;
 	private bool changeTexture;
 	
@@ -42,7 +43,7 @@ public class AnimatedUVBehaviour : UVMoveBehaviour {
 		currentRow = 0;
 		currentColoum = 0;
 		currentTexture = 0;
-		frameCount = FramesPerRow * RowCount;
+		framesPerTexture= ColumnCount * RowCount;
 		changeTexture = false;
 		
 	}
@@ -59,19 +60,18 @@ public class AnimatedUVBehaviour : UVMoveBehaviour {
 		
 		if(frameTime > (1.0f/MovieSpeedFPS)){ // change frame
 			
-			currentFrameNumber ++;
-			frameTime = 0;
-			if(currentFrameNumber >= frameCount)
-				currentFrameNumber = 0;
+			var framesPlayed = (int)(frameTime*MovieSpeedFPS);
+  			currentFrameNumber = (currentFrameNumber + framesPlayed) % TotalFramesCount;
+  			frameTime -= framesPlayed/MovieSpeedFPS;
+  			changeFrame();
 			
-			changeFrame();
 			
 		}
 	}
 	
 	private void changeFrame(){
 		
-		newUvs = new Rect(FrameSize*(currentColoum),FrameSize*(currentRow*-1) , 1,1);	
+		newUvs = new Rect(FrameSizeX*(currentColoum),FrameSizeY*(currentRow*-1) , 1,1);	
 		if(changeTexture){
 			//EditorDebug.LogWarning("ChangeTExture");
 			renderer.material.SetTexture("_MainTex", Textures[currentTexture]);
@@ -79,20 +79,14 @@ public class AnimatedUVBehaviour : UVMoveBehaviour {
 		}
 			
 			
-		currentColoum++;
-		if(currentColoum >= FramesPerRow){
-			currentColoum = 0;
-			currentRow++;
-		}			
-		if(currentRow >= RowCount)
-			currentRow = 0;
-		if(currentFrameNumber%FramesPerTexture == 0){
-			currentTexture++;
-			if(currentTexture >= Textures.Length)
-				currentTexture = 0;
-			changeTexture = true;
-			
-		}
+		currentRow = (int)(currentFrameNumber%framesPerTexture)/ColumnCount;
+		currentColoum = (int)(currentFrameNumber%framesPerTexture)/RowCount;
+		int oldTexture = currentTexture;
+		currentTexture = (int)(currentFrameNumber/framesPerTexture);
+		if(oldTexture != currentTexture)
+				changeTexture = true;
+		
+		
 		//EditorDebug.Log("New UVs: " + newUvs + "Row: " + currentRow + "Coloumn: " + currentColoum);
 		
 	}

@@ -9,17 +9,17 @@ public class AlertTextPanel : TextPanel {
 	public bool ShowAlways; 
 	
 	protected bool textShow = false;
-	public Timer timer1{
+	public Timer HidingTimer{
 		get{
-			return timer;
+			return localTimer;
 		}
 		private set{
-			timer = value;
+			localTimer = value;
 		}
 		
 	}
 	
-	private Timer timer;
+	private Timer localTimer;
 	
 	void Awake(){
 		AwakeOverride();
@@ -37,9 +37,9 @@ public class AlertTextPanel : TextPanel {
 	}
 	
 	private void initTimer(){
-		if(timer1 == null)
-			timer1 = new Timer(ShowTimeInSeconds);
-		timer1.TimerFinished += OnTimerFinished;
+		if(HidingTimer == null)
+			HidingTimer = new Timer(ShowTimeInSeconds);
+		HidingTimer.TimerFinished += OnTimerFinished;
 	}
 
 	
@@ -73,7 +73,7 @@ public class AlertTextPanel : TextPanel {
 		initTimer();
 		textShow = true;
 		Text = value;
-		timer1.StartTimer(time);
+		HidingTimer.StartTimer(time);
 	}
 	public void HideText(){
 		textShow = false;
