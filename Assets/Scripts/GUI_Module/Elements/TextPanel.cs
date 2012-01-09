@@ -9,6 +9,7 @@ public class TextPanel : Panel {
 	public bool MultiLine;
 	public int LineLength = 1;
 	public int MaxInputTextLength = 10; 
+	public bool ShowTextArea = false;
 	
 
 	
@@ -43,18 +44,23 @@ public class TextPanel : Panel {
 	
 	void OnGUI(){
 		OnGUIOverride();
+
 	}
 	
 	protected override void OnGUIOverride(){
 		base.OnGUIOverride();
 		formatText();
-		if(this.Visibility){
-			if(Editable)
-				Text = UnityEngine.GUI.TextField(realTextRegion, formatetText, MaxInputTextLength, textStyle);
-			else
-				UnityEngine.GUI.Label(realTextRegion, formatetText, textStyle);	
+		if(Editable)
+			Text = UnityEngine.GUI.TextField(realTextRegion, formatetText, MaxInputTextLength, textStyle);
+		else
+			UnityEngine.GUI.Label(realTextRegion, formatetText, textStyle);
+#if UNITY_EDITOR
+		if(ShowTextArea){
+			initTextRegion();
+			UnityEngine.GUI.Box(realTextRegion, "");	
 		}
-		
+#endif 
+
 	}
 	
 	
@@ -82,6 +88,8 @@ public class TextPanel : Panel {
 		//UpdateElement();
 	}
 	
+
+	
 	public override void CreateElement (){
 		base.CreateElement ();
 		initTextRegion();
@@ -102,6 +110,7 @@ public class TextPanel : Panel {
 			textStyle.font = ScreenConfig.Instance.Fonts[index];
 		} else
 			EditorDebug.LogWarning("No Font found that matches TargetFontSize: " + targetFontSize + " index: " + index + "Object: " + gameObject.name);
+		textStyle.fontSize = 0;
 		
 	}
 	private void formatMultilineText(){

@@ -168,7 +168,7 @@ public class InputEvents : MonoBehaviour{
 		if(getIsDown(buttonId)){
 			Vector2 moveDirection = mousePosition - mouseStartPosition;
 			float clickDistance = moveDirection.magnitude;
-			if(clickDistance <= ScreenConfig.Instance.SwipeMinDistance || getButtonDownTime(buttonId) <= ScreenConfig.Instance.SwipeMinTime){
+			if(clickDistance <= ScreenConfig.Instance.SwipeMinDistance || getButtonDownTime(buttonId) < (ScreenConfig.Instance.SwipeMinTime*Time.timeScale)){
 				InvokeClickEvent(buttonId);
 			} else{ // Swipe detected
 					InvokeSwipeEvent(moveDirection);

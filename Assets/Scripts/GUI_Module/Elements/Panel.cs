@@ -69,6 +69,7 @@ public class Panel : Frame {
 	// Use this for initialization
 	protected override void AwakeOverride(){
 		base.AwakeOverride();
+		this.Visibility = true;
 	}
 	
 

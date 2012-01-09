@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 
 
-
 public sealed class SampleUIController : Controller<MonoBehaviour>
 {
 	private Func<float, float> function;
