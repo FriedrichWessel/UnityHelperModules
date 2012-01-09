@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections;
-using asdf.Resources;
+using Pux.Resources;
 
 public class Panel : Frame {
 
@@ -62,6 +62,7 @@ public class Panel : Frame {
 	// Use this for initialization
 	protected override void AwakeOverride(){
 		base.AwakeOverride();
+		this.Visibility = true;
 		//if(!LateCreation)
 			//CreateElement();
 	}

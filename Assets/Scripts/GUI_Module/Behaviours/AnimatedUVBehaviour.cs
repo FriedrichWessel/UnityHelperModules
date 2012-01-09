@@ -3,12 +3,13 @@ using System.Collections;
 
 public class AnimatedUVBehaviour : UVMoveBehaviour {
 
-	public int MovieSpeedFPS;
+	public float MovieSpeedFPS;
 	public int FrameSize;
 	public int FramesPerRow;
 	public int RowCount;
 	public int FramesPerTexture;
 	public Texture2D[] Textures;
+	public bool Loop = true;
 	
 	private float frameTime;
 	private int currentFrameNumber;
@@ -18,6 +19,8 @@ public class AnimatedUVBehaviour : UVMoveBehaviour {
 	private int currentTexture;
 	//private int textureSize;
 	private bool changeTexture;
+	
+	private bool firstRun = true;
 	
 	// Use this for initialization
 	void Start () {
@@ -71,6 +74,9 @@ public class AnimatedUVBehaviour : UVMoveBehaviour {
 	
 	private void changeFrame(){
 		
+		if(!Loop && !firstRun)
+			return;
+		
 		newUvs = new Rect(FrameSize*(currentColoum),FrameSize*(currentRow*-1) , 1,1);	
 		if(changeTexture){
 			//EditorDebug.LogWarning("ChangeTExture");
@@ -91,6 +97,7 @@ public class AnimatedUVBehaviour : UVMoveBehaviour {
 			if(currentTexture >= Textures.Length)
 				currentTexture = 0;
 			changeTexture = true;
+			firstRun = false;
 			
 		}
 		//EditorDebug.Log("New UVs: " + newUvs + "Row: " + currentRow + "Coloumn: " + currentColoum);
