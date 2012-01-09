@@ -50,6 +50,8 @@ public class TextPanel : Panel {
 	protected override void OnGUIOverride(){
 		base.OnGUIOverride();
 		formatText();
+		if(!this.Visibility)
+			return;
 		if(Editable)
 			Text = UnityEngine.GUI.TextField(realTextRegion, formatetText, MaxInputTextLength, textStyle);
 		else
