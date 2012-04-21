@@ -3,7 +3,7 @@ using System.Collections;
 
 public class GUIGameObject : MonoBehaviour {
 
-	public Material GUIMaterial{
+	public virtual Material GUIMaterial{
 		get{
 			return renderer.sharedMaterial;
 		}
@@ -15,7 +15,6 @@ public class GUIGameObject : MonoBehaviour {
 	protected float textureFactor = 1.0f;
 	
 	protected CameraScreen activeScreen;
-	
 	
 	public Mesh MeshObject{
 		get{
@@ -37,7 +36,7 @@ public class GUIGameObject : MonoBehaviour {
 	
 	
 	protected virtual void StartOverride(){
-		
+		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
 	}
 	
 	protected virtual void UpdateOverride(){
@@ -49,24 +48,7 @@ public class GUIGameObject : MonoBehaviour {
 	}
 	
 	
-	public Vector3 ScreenToWorldCoordinates(Vector2 screenCoordinate){
-		
-		Camera cam = transform.parent.GetComponent<Camera>();
-		if(cam == null){
-			EditorDebug.LogError("No camera found on Object: " + gameObject.name);
-			throw new MissingComponentException("No camera found on Object: " + gameObject.name);
-		}
-		
-		Ray r = cam.ScreenPointToRay(screenCoordinate);
-		EditorDebug.DrawRay(r.origin, r.direction);
-		// Switch x because Plane is looking at camera - so coordinate system is opposite, switching y because Camera has inverted space
-		// in y in comparison to World
-		//EditorDebug.Log("Origin: " + r.origin);
-		//var ret = new Vector3(r.origin.x, r.origin.y*-1, 0);
-		var ret = r.origin;
-		return ret;
-		
-	}
+	
 	
 	public Vector3 WorldToLocalCoordinates(Vector3 worldCoordinates){
 		return gameObject.transform.InverseTransformPoint(worldCoordinates);

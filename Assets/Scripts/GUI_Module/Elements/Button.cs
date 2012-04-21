@@ -3,15 +3,13 @@ using System.Collections;
 
 public class Button : Control {
 
-	public Rect hoverUV;
-	public Rect activeUV;
+	public Rect HoverUV;
+	public Rect ActiveUV;
 	
-	// Two Bools to emulate Hover and Active for better Texture placing
 	public bool ConstantHover;
 	public bool ConstantActive;
 	
-	protected bool down = false;
-	
+
 	
 	public override void OnClick(object sender, MouseEventArgs e){
 		base.OnClick(sender,e);
@@ -19,38 +17,54 @@ public class Button : Control {
 	}
 	
 	public override void OnDown(object sender, MouseEventArgs e){
-		
 			base.OnDown(sender,e);
-			down = true;
-			plane.UV = activeUV;	
-		
-		
+			if(ReadOnly)
+				return;
+			if(!ConstantHover){
+				plane.UV = ActiveUV;	
+			}
+
 	}
 	
 	public override void OnUp(object sender, MouseEventArgs e){
-		if(down){	
-			base.OnUp(sender,e);
-			down = false;
-			plane.UV = Uv;
+		base.OnUp(sender,e);
+		if(ReadOnly)
+			return;
+		if(down){
+			if(!ConstantHover && !ConstantActive){
+				plane.UV = Uv;
+			} else if(ConstantActive && Label != null){
+				Label.IsActive = true;
+			}
 		}
 	}
 	
 	public override void OnHover(object sender, MouseEventArgs e){
-		//EditorDebug.Log("HOVER: " + gameObject.name);
 		base.OnHover(sender,e);
-		if(!down)
-			plane.UV = hoverUV;
+		if(ReadOnly)
+			return;
+		if(!down && !ConstantActive && plane != null){
+			if(!InputEvents.Instance.GetIsDown(0))
+				plane.UV = HoverUV;
+		}
+			
+		
+		
 	}
 	
-	public override void resetElement(){
-		if(!down && plane != null){
+	public override void ResetElement(){
+		base.ResetElement();
+		if(ReadOnly && plane != null){
+			plane.UV = ReadOnlyUV;
+		} else if(!down && plane != null){
 			plane.UV = Uv;
-#if UNITY_EDITOR
-		if(ConstantHover)
-				plane.UV = hoverUV;
-		if(ConstantActive)
-				plane.UV = activeUV;
-#endif 
+		}
+		if(ConstantHover && plane != null)
+				plane.UV = HoverUV;
+		if(plane != null && ConstantActive)
+				plane.UV = ActiveUV;
+		else if(ConstantActive && Label != null){
+			Label.IsActive = true;
 		}
 	}
 	

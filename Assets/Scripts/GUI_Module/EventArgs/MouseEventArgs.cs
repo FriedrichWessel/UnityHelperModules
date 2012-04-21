@@ -10,8 +10,13 @@ public class MouseEventArgs : EventArgs {
 			return MoveDirection.magnitude;		
 		}
 	}
+	
 	public Vector2 MoveDirection{get;set;}
 	public Vector2 MousPosition{get;set;}
+	
+	// can save if the Element where the action take place has registert a mouse down
+	// relevant for InteractionBehaviours - if you somebody want react only if is an activeElement
+	public bool ElementIsActive = false;
 	
 	public MouseEventArgs(int buttonId) {
 		MouseDown = new Dictionary<int, bool>();

@@ -7,7 +7,7 @@ public class OpenDropDownMenuBehaviour : InteractionBehaviour {
 	
 	public override void Click (MouseEventArgs mouse){
 		base.Click (mouse);
-		DropDown.ToggleContentVisibility();
-		
+		if(mouse.ElementIsActive)
+			DropDown.ToggleContentVisibility();	
 	}
 }

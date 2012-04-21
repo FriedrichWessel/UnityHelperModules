@@ -7,10 +7,6 @@ public class Panel : Frame {
 
 	
 	public LayoutBehaviour Layout;
-	public string help1 = "NOT WORKING LIVE:";
-	public int GUIDepth = 5;
-	
-	//public bool FullscreenElement = false;
 	
 	public override bool Visibility{
 		get{
@@ -18,37 +14,34 @@ public class Panel : Frame {
 			if(plane != null){
 				flag = plane.renderer.enabled;
 				currentVisibility = flag;
-			}
-				
+			}	
 			return flag;
 		}
 		set{
-			
 			if(plane != null){
 				plane.renderer.enabled = value;
-				EditorDebug.Log("Change vis for: " + gameObject.name + " to " + value);
-			}
-				
+			}	
+			currentVisibility = value;
 		}
 	}
 	
-	
+	public Rect FieldOfIntrest{
+		get;
+		protected set;
+	}
 	
 	public Rect Uv;
 	
 	private GUIStyle inactiveStyle;
 	
-	protected GUIPlane plane;
+	public GUIPlane plane{
+		get;
+		protected set;
+	}
 
 	
-	protected GUIStyle currentStyle;
+	//protected GUIStyle currentStyle;
 
-	
-	
-
-	
-	
-	
 	
 	// DONT USE THIS
 	void Awake(){
@@ -70,8 +63,80 @@ public class Panel : Frame {
 	protected override void AwakeOverride(){
 		base.AwakeOverride();
 		this.Visibility = true;
+		if(FullscreenElement){
+			ResizeToFullScreen();
+		}	
 	}
 	
+	public static void CalculateFullScreenSize(ref Rect regionOnScreen, ref Rect uvs,Frame.TextureHandling textureHandling, out Rect fieldOfIntrest){
+		fieldOfIntrest = new Rect(0,0,-1,-1);
+		
+		var aspectImage = regionOnScreen.width / regionOnScreen.height;
+		var aspectScreen = ScreenConfig.Instance.ScreenAspect;
+		if(textureHandling == Frame.TextureHandling.StretchTexture){
+			regionOnScreen.width = ScreenConfig.Instance.TargetScreenWidth;//Screen.width;
+			regionOnScreen.height = ScreenConfig.Instance.TargetScreenHeight;//Screen.height;
+			fieldOfIntrest = regionOnScreen;
+		} else if(textureHandling == Frame.TextureHandling.ResizeElement){
+			
+			if(aspectImage < aspectScreen){
+				regionOnScreen.height = ScreenConfig.Instance.TargetScreenHeight;
+				regionOnScreen.width = ScreenConfig.Instance.TargetScreenHeight * aspectImage;
+			} else {
+				regionOnScreen.width = ScreenConfig.Instance.TargetScreenWidth;
+				regionOnScreen.height = ScreenConfig.Instance.TargetScreenWidth * aspectImage;
+			}
+			fieldOfIntrest = regionOnScreen;
+		} else if(textureHandling == Frame.TextureHandling.ResizeUVs){
+			
+			if(aspectImage == aspectScreen)
+				return;
+			
+			if(aspectImage < aspectScreen){
+				
+				var oldValue = uvs.width;
+				uvs.width = uvs.height * aspectScreen;
+				var diff = uvs.width - oldValue;
+				uvs.x -= (int)(diff/2);
+				
+				
+				fieldOfIntrest.height = ScreenConfig.Instance.TargetScreenHeight;
+				fieldOfIntrest.width = ScreenConfig.Instance.TargetScreenHeight * aspectImage;
+				fieldOfIntrest.x = (ScreenConfig.Instance.TargetScreenWidth - fieldOfIntrest.width) / 2;
+				fieldOfIntrest.y = 0;
+				
+				
+			} else{
+				var oldValue = uvs.height;
+				uvs.height = uvs.width / aspectScreen;
+				var diff = uvs.height - oldValue;
+				uvs.y -= (int)(diff/2);
+				
+				fieldOfIntrest.height = ScreenConfig.Instance.TargetScreenWidth / aspectImage;
+				fieldOfIntrest.width = ScreenConfig.Instance.TargetScreenWidth;
+				fieldOfIntrest.x = 0;
+				fieldOfIntrest.y = (ScreenConfig.Instance.TargetScreenHeight - fieldOfIntrest.height) / 2;
+		
+			}
+			
+
+			
+			regionOnScreen.height = ScreenConfig.Instance.TargetScreenHeight;
+			regionOnScreen.width = ScreenConfig.Instance.TargetScreenWidth;
+		}
+		
+	}
+		
+	protected void ResizeToFullScreen(){
+		Rect tmpRegionOnScreen = VirtualRegionOnScreen;
+		Rect tmpUV = Uv;
+		Rect tmpFOI = FieldOfIntrest;
+		Panel.CalculateFullScreenSize(ref tmpRegionOnScreen, ref tmpUV, KeepAspectRatio, out tmpFOI);
+		VirtualRegionOnScreen = tmpRegionOnScreen;
+		if(tmpFOI.width >= 0 && tmpFOI.height >= 0)
+			FieldOfIntrest = tmpFOI;
+		Uv = tmpUV;
+	}
 
 	void Start () {
 		StartOverride();
@@ -80,7 +145,7 @@ public class Panel : Frame {
 	
 	protected override void StartOverride(){
 		base.StartOverride();
-		UpdateRegionOnScreen();
+		calculateVirtualRegionOnScreen();
 	}
 	
 	void OnGUI(){
@@ -105,28 +170,28 @@ public class Panel : Frame {
 	}
 #endif		
 
-	
+	public override void UpdateElement(bool updateChildren = true){
+		if(!created)
+			return;
+		base.UpdateElement();
+		
+		if(FullscreenElement)
+			ResizeToFullScreen();
+		if(plane != null){
+			plane.UV = Uv;
+			plane.VirtualRegionOnScreen = RealRegionOnScreen;
+		}
+			
+		
+	}
 	public override void CreateElement(){
 		base.CreateElement();
-	
-
-		
 		this.createGUIElement();
-		created = true;
-		UpdateElement();
+		//UpdateElement();
 	}
 	
 	
-
-	public override void UpdateRegionOnScreen(){
-		base.UpdateRegionOnScreen();
-		if(plane != null)
-			plane.VirtualRegionOnScreen = RealRegionOnScreen;
-		
-		//resetElement();
-	}
-	
-	public virtual void createGUIElement(){
+	protected virtual void createGUIElement(){
 		
 		CreateGUIPlane();
 				
@@ -135,8 +200,8 @@ public class Panel : Frame {
 		plane.transform.parent = cam.transform;
 		
 		// Orient Plane to Camera
-		resetPlaneTransform();
-		float layer = (float)GUIDepth * 0.0001f;
+		plane.resetPlaneTransform();
+		float layer = (float)GUIDepth * guiDepthFactor;
 		plane.transform.Translate(new Vector3(0,0,(activeScreen.ScreenCamera.nearClipPlane+layer)), Space.Self);
 		plane.transform.LookAt(cam.transform);
 		
@@ -146,15 +211,6 @@ public class Panel : Frame {
 		plane.VirtualRegionOnScreen = RealRegionOnScreen;
 		
 			
-	}
-	
-	public void SetRotationTransformations(Vector2 localCenter, float degrees){
-		plane.RotationAngle = degrees;
-		plane.RotationCenter = localCenter;
-	}
-	
-	private Vector3 WorldToLocalCoordinates(Vector3 worldCoordinates){
-		return gameObject.transform.InverseTransformPoint(worldCoordinates);
 	}
 	
 	private void CreateGUIPlane(){
@@ -173,24 +229,32 @@ public class Panel : Frame {
 		
 	}
 	
-	public override  bool checkMouseOverElement(){
+	
+	public void SetRotationTransformations(Vector2 localCenter, float degrees){
+		plane.RotationAngle = degrees;
+		plane.RotationCenter = localCenter;
+	}
+	
+	private Vector3 worldToLocalCoordinates(Vector3 worldCoordinates){
+		return gameObject.transform.InverseTransformPoint(worldCoordinates);
+	}
+	
+
+	
+	public override  bool CheckMouseOverElement(){
 		return CameraScreen.CursorInsidePhysicalRegion(RealRegionOnScreen);
 	}
 	
 	
 	
-	public override void resetElement(){
+	public override void ResetElement(){
+		base.ResetElement();
 		if(plane != null)
 			plane.UV = Uv;
 		
 	}
 	
-	private void resetPlaneTransform(){
-		plane.transform.rotation = Quaternion.identity;
-		plane.transform.localRotation = Quaternion.identity;
-		plane.transform.localPosition = Vector3.zero;
-		plane.transform.localScale = Vector3.one;
-	}
+	
 	
 	
 }

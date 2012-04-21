@@ -6,8 +6,9 @@ using System;
 public class RadioCollection : Frame {
 
 	public CheckBox DefaultCheckbox; 
-	
+	public bool OneMustBeSelected = true;
 	private List<CheckBox> radioButtons;
+	private CheckBox current;
 	
 	protected override void AwakeOverride (){
 		base.AwakeOverride ();
@@ -17,19 +18,20 @@ public class RadioCollection : Frame {
 	
 	protected override void StartOverride (){
 		base.StartOverride ();
-		enableDefaultCheckbox();
 	}
 	
 	private void enableDefaultCheckbox(){
-		if(DefaultCheckbox != null)
+		if(DefaultCheckbox != null){
+			current = DefaultCheckbox;
 			DefaultCheckbox.Checked = true;
-		else
+		} else
 			EditorDebug.LogError("No DefaultCheckbox found on Element: " + gameObject.name);
 	}
 	
 	protected override void firstUpdate (){
 		base.firstUpdate ();
-		enableDefaultCheckbox();
+		if(OneMustBeSelected)
+			enableDefaultCheckbox();
 	}
 	
 	private void updateRadioButtons(){
@@ -42,21 +44,26 @@ public class RadioCollection : Frame {
 			radioButtons.Add(cb);
 			cb.CheckboxStatusChanged += OnCheckboxStatusChanged;
 		}
-		EditorDebug.Log("CheckBoxes found: " + radioButtons);
 		if(DefaultCheckbox == null && radioButtons.Count > 0)
 			DefaultCheckbox = radioButtons[0];
 	}
 	
 	private void OnCheckboxStatusChanged(object sender, CheckBoxEventArgs e){
+		if(!created)
+			return;
+		
 		bool flag = e.Checkbox.Checked;
-		foreach(CheckBox cb in radioButtons){
-			if(cb.Checked)
-				cb.Checked = false;
-		}
-		if(!flag)
+		
+		if(current != null && current != e.Checkbox && flag){
+			// we need this tmp because the CheckboxChanged is Called immedatly 
+			// -> this function is called again before change current, if we dont set old current = false via tmp
+			var old = current;
+			current = e.Checkbox;
+			old.Checked = false;
+		} else if(current == null || (!current.Checked && OneMustBeSelected) )
 			enableDefaultCheckbox();
-		else
-			e.Checkbox.Checked = true;
+		
+		
 	}
 	
 	

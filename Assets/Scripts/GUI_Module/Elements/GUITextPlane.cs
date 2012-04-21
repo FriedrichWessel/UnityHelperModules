@@ -12,14 +12,24 @@ public class GUITextPlane : GUIGameObject {
 			var tmpValue = value;
 			
 			tmpValue.y = Screen.height - tmpValue.y;
-			
-			var worldPosition =  ScreenToWorldCoordinates(new Vector2(tmpValue.x, tmpValue.y));
+			if(activeScreen == null)
+				base.StartOverride();
+			var worldPosition =  activeScreen.ScreenToWorldCoordinates(new Vector2(tmpValue.x, tmpValue.y));
 			textComponent.transform.position = new Vector3(worldPosition.x, worldPosition.y, textComponent.transform.position.z);
 			
 			
 		}
 		
 	}	
+	
+	public override Material GUIMaterial{
+		get{
+			return renderer.material;
+		}
+		set{
+			renderer.material = value;
+		}
+	}
 	
 	public string TextValue{
 		get{
@@ -48,7 +58,7 @@ public class GUITextPlane : GUIGameObject {
 		}
 	}
 	
-	public Font FontValue{
+	public Font FontType{
 		get{
 			return textComponent.font;
 		} set{

@@ -8,11 +8,21 @@ public class SliderHandle : Button {
 		set;
 	}
 	
+	
 	public override void OnMove (object sender, MouseEventArgs mouse){
 		base.OnMove (sender, mouse);
 		if(down){
 			float mouseOffsetToElement = getMouseOffsetToElement(); 
-			SliderElement.SliderValue = (mouseOffsetToElement*SliderElement.sliderValueRange) / SliderElement.sliderLength;
+			
+			bool flag = SliderElement.SliderMaxPosition - SliderElement.SliderMinPosition < 0;
+			if(flag)
+				mouseOffsetToElement *= -1;
+			
+			var value = (mouseOffsetToElement*SliderElement.sliderValueRange) / SliderElement.sliderLength;
+			SliderElement.SliderValue = value;
+			//EditorDebug.Log("Slider Value: " + value + " Object: " + gameObject.name);
+			
+				
 			
 		}
 	}
@@ -20,7 +30,7 @@ public class SliderHandle : Button {
 	private float getMouseOffsetToElement(){
 		Vector2 realMouseOffset = new Vector2(0,0);
 		realMouseOffset.x = Input.mousePosition.x - SliderElement.RealRegionOnScreen.x;
-		realMouseOffset.y = Input.mousePosition.y - SliderElement.RealRegionOnScreen.y;
+		realMouseOffset.y = CameraScreen.NormalizePhysicalMousePosition(Input.mousePosition).y - SliderElement.RealRegionOnScreen.y;
 		
 		float mouseOffsetToElement;
 		if(SliderElement.Orientation == ElementOrientation.horizontal){	
@@ -34,7 +44,7 @@ public class SliderHandle : Button {
 		return mouseOffsetToElement;
 	}
 	
-	public override bool checkMouseOverElement (){
-		return ( base.checkMouseOverElement () || down ) ;
+	public override bool CheckMouseOverElement (){
+		return ( ( base.CheckMouseOverElement () || down ) && !ReadOnly ) ;
 	}
 }

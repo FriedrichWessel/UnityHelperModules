@@ -3,6 +3,7 @@ using System.Collections;
 
 public class InteractionBehaviour  : MonoBehaviour{
 
+	private bool firstUpdateFlag = true;
 	// DONT USE THIS
 	void Awake(){
 		AwakeOverride();
@@ -11,6 +12,29 @@ public class InteractionBehaviour  : MonoBehaviour{
 	// USE THIS FOR INITIALISATION
 	protected virtual void AwakeOverride(){
 		
+	}
+	
+	void Start(){
+		StartOverride();
+	}
+	
+	protected virtual void StartOverride(){
+		
+	}
+	
+	private void Update(){
+		UpdateOverride();
+	}
+	
+	protected virtual void UpdateOverride(){
+		if(firstUpdateFlag){
+			firstUpdateFlag = false;
+			firstUpdate();
+		}
+	}
+	
+	protected virtual void firstUpdate(){
+		// nothing there
 	}
 	
 	public virtual void Click(MouseEventArgs mouse){}

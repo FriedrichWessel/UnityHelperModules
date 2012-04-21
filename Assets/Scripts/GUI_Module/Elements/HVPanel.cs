@@ -14,8 +14,8 @@ public class HVPanel : Panel {
 	}
 	
 	
-	public override void UpdateElement(){
-		UpdateDirectChildren();
+	public override void UpdateElement(bool updateChildren = true){
+		initDirectChildren();
 		Vector2 position = ElementOffset;
 		foreach (var child in DirectChildren){
 			var childRegion = child.VirtualRegionOnScreen;
@@ -26,7 +26,7 @@ public class HVPanel : Panel {
 				position.y += childRegion.height + ElementSpacing;
 			}
 		}
-		base.UpdateElement();
+		base.UpdateElement(updateChildren);
 		
 	}
 	

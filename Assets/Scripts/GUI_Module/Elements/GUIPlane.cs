@@ -29,11 +29,15 @@ public class GUIPlane : GUIGameObject {
 	}
 	
 	
+	
+	
 	protected override void StartOverride(){
 		base.StartOverride();
 		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
 		if(activeScreen == null)
 			EditorDebug.LogWarning("No activeScreen found on GUIPlane: " + gameObject.name);
+		
+		
 		updateTextureFactor();
 	}
 	
@@ -63,10 +67,11 @@ public class GUIPlane : GUIGameObject {
 			var centerX = tmp.x + tmp.width * RotationCenter.x;
 			var centerY = tmp.y + tmp.height * RotationCenter.y;
 			var center = new Vector2(centerX, centerY);
-			
+			if(activeScreen == null)
+				base.StartOverride();
 			for(int i = 0; i < vertices.Length; i++){
 				vertices[i] = RotateVertex(vertices[i], center, RotationAngle);
-				vertices[i] = ScreenToWorldCoordinates(vertices[i]);
+				vertices[i] = activeScreen.ScreenToWorldCoordinates(vertices[i]);
 				//EditorDebug.Log("PRE Position: " + i + " " + vertices[i]);
 				vertices[i] = WorldToLocalCoordinates(vertices[i]);
 				vertices[i] = new Vector3(vertices[i].x, vertices[i].y*-1,0);
@@ -95,6 +100,19 @@ public class GUIPlane : GUIGameObject {
 			MeshObject.uv = uvs;
     	}
 		
+	}
+	
+	public Vector3 GetUpperLeftCorner(){
+		var point = gameObject.transform.TransformPoint(MeshObject.vertices[3]); 
+		//Debug.DrawRay(new Vector3(0,0,0), new Vector3(0.1f,0.1f,0.1f));
+		return point;
+	}
+	
+	public void resetPlaneTransform(){
+		this.transform.rotation = Quaternion.identity;
+		this.transform.localRotation = Quaternion.identity;
+		this.transform.localPosition = Vector3.zero;
+		this.transform.localScale = Vector3.one;
 	}
 	
 	

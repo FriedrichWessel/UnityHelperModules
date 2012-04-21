@@ -9,6 +9,7 @@ public class CameraScreen : Frame {
 	public bool DebugModus;
 	public int TextureSize = 512;
 	public Material GUIMaterial;
+	public Material TextMaterial;
 	
 	// Public Member - init in the inspector
 	public Camera ScreenCamera;
@@ -21,11 +22,9 @@ public class CameraScreen : Frame {
 		}
 	}
 	
-	private Panel[] allChildren{
-		get{
-			return (gameObject.GetComponentsInChildren<Panel>() as Panel[]);
-		}
-	}
+	private List<Frame> allChildren;
+	
+	
 	
 	// DONT USE THIS
 	void Awake(){
@@ -43,10 +42,27 @@ public class CameraScreen : Frame {
 	protected override void StartOverride(){
 		base.StartOverride();
 		CreateElement();
-		
 		initEvents();
 	}
 	
+	public override void CreateElement (){
+		base.CreateElement();
+		initAllChildren();
+		foreach(Frame f in allChildren){
+			f.CreateElement();
+		}
+		UpdateElement();
+	}
+	
+	private void initAllChildren(){
+		allChildren = new List<Frame>();
+		var frames = gameObject.GetComponentsInChildren<Frame>() as Frame[];
+		Frame thisFrame = this.GetComponent<Frame>() as Frame;
+		foreach(Frame f in frames){
+			if(f != thisFrame)
+				allChildren.Add(f);
+		}
+	}
 	private void initEvents(){
 		InputEvents.Instance.ClickEvent += OnClick;	
 		InputEvents.Instance.MoveEvent += OnMove;
@@ -71,9 +87,7 @@ public class CameraScreen : Frame {
 	}
 #endif	
 	
-	public override void UpdateElement(){
-		this.RealRegionOnScreen = GetPhysicalRegionFromRect(VirtualRegionOnScreen,KeepAspectRatio);
-	}
+	
 	private static Vector2 getFactor(bool withAspect = true){
 		// Get the right Hight and Width proportional to screen
 		float rightAspectHeight = Screen.height;
@@ -91,15 +105,15 @@ public class CameraScreen : Frame {
 	}
 	
 	
-	public Rect GetPhysicalRegionFromRect(Rect rect, bool withAspect = true){
+	public Rect GetPhysicalRegionFromRect(Rect rect, Frame.TextureHandling textureHandling = Frame.TextureHandling.ResizeElement){
 		Rect camPosition = ScreenCamera.pixelRect;
 		// Move Camera is needed for Splitscreen
 		if(((int)ScreenCamera.pixelHeight) != Screen.height){
 			//EditorDebug.Log("ScreenCamera Height: " + ScreenCamera.pixelHeight +  "\n Screen Height: " + Screen.height);
 			camPosition.y = ScreenCamera.pixelHeight - camPosition.y;
 		}
-		
-		Vector2 factor = getFactor(withAspect);
+		bool withAspectFlag =  textureHandling != Frame.TextureHandling.StretchTexture;
+		Vector2 factor = getFactor(withAspectFlag);
 		Vector2 newPosition = new Vector2((camPosition.x+rect.x)*factor.x, (camPosition.y +  rect.y)*factor.y);
 		Vector2 newSize = new Vector2(rect.width*factor.x,rect.height*factor.y);
 		
@@ -124,11 +138,6 @@ public class CameraScreen : Frame {
 		base.callHandler(interaction, action);
 	}
 	
-	private void createElements(){
-		foreach(Panel box in allChildren){
-			box.createGUIElement();
-		}
-	}
 	
 	// STATIC FUNCTIONS
 	public static bool cursorInside(Vector2 elementPosition, Vector2 elementSize) {
@@ -196,6 +205,27 @@ public class CameraScreen : Frame {
 		screenPosition.x /= factor.x;
 		screenPosition.y /= factor.y;
 		return screenPosition;
+	}
+	
+	// Function flip the y coordinate of Vector because Camera upper Left Corner is opposite to Screen upper Left Corner
+	public static Vector2 NormalizePhysicalMousePosition(Vector2 mousePosition){
+		mousePosition.y =  Screen.height - mousePosition.y;
+		return mousePosition;
+	}
+	
+	public Vector3 ScreenToWorldCoordinates(Vector2 screenCoordinate){
+		
+		Camera cam = this.ScreenCamera;
+		if(cam == null){
+			EditorDebug.LogError("No camera found on Object: " + gameObject.name);
+			throw new MissingComponentException("No camera found on Object: " + gameObject.name);
+		}
+		
+		Ray r = cam.ScreenPointToRay(screenCoordinate);
+		//EditorDebug.DrawRay(r.origin, r.direction);
+		var ret = r.origin;
+		return ret;
+		
 	}
 	
 	

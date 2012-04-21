@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 
-public class Frame : MonoBehaviour
-{
+public class Frame : MonoBehaviour{
+	
+	protected float guiDepthFactor = 0.0001f;
+	
 	public List<Frame> DirectChildren{
 		get;
 		protected set;
@@ -15,21 +17,27 @@ public class Frame : MonoBehaviour
 	public enum HorizontalFloatPositions {left, right,center, none}
 	public enum VerticalFloatPositions {top, bottom,center, none}
 	public enum ElementOrientation{horizontal, vertical}
+	public enum TextureHandling{StretchTexture,ResizeUVs,ResizeElement}
+	
+	// Only relevant in automatic position elements like HV Panel - Lower Number positioned Higher
+	public int ListIndex = 10;
 	
 	public Rect VirtualRegionOnScreen; 
 	protected Rect originalVirtualRegionOnScreen;
 	
-	public VerticalFloatPositions verticalFloat = Panel.VerticalFloatPositions.none;
-	public HorizontalFloatPositions horizontalFloat = Panel.HorizontalFloatPositions.none;
+	public VerticalFloatPositions verticalFloat = VerticalFloatPositions.none;
+	public HorizontalFloatPositions horizontalFloat = HorizontalFloatPositions.none;
 	
 	public bool FullscreenElement = false;
-	public bool KeepAspectRatio = true;
+	public TextureHandling KeepAspectRatio = Frame.TextureHandling.ResizeElement;
+	public string help1 = "NOT WORKING LIVE:";
+	public int GUIDepth = 5;
+	public bool PropagateEvents = true;
 	
 	protected bool created = false;
 	protected bool firstUpdateFlag = true;
 	protected bool currentVisibility = true;
 	protected bool savedVisibility;
-	
 	protected bool inheritedVisibility = false;
 	
 	
@@ -76,7 +84,9 @@ public class Frame : MonoBehaviour
 	}
 	
 	protected Frame parent;
-
+	
+	#region init
+	
 	// DONT USE THIS!
 	void Awake() {
 		AwakeOverride();
@@ -84,45 +94,76 @@ public class Frame : MonoBehaviour
 
 	// Use this for initialization
 	protected virtual void AwakeOverride() {
+	}
+	
+	void Start() {
+		StartOverride();
+	}
+	
+	protected virtual void StartOverride(){
+	}
+	
+	protected void initDirectChildren() {
+		DirectChildren = new List<Frame>();
+		foreach (Transform child in transform) {
+			var b = child.GetComponent<Frame>();
+			if (b != null){
+				DirectChildren.Add(b);
+			}
+				
+		}
+		DirectChildren.Sort(CompareFramesByIndex);
+	}
+	
+	public virtual void CreateElement(){
+		if(created){
+			EditorDebug.LogWarning("Element: "+ gameObject.name + "already created");
+			return;
+		}
+		initParent();
+		initActiveScreen();
+		RealRegionOnScreen = new Rect(0,0,0,0);
+		initDirectChildren();
 		
 		Visibility = true;
 		savedVisibility = true;
-		UpdateParent();
-		if(FullscreenElement){
+		
+		if(FullscreenElement && KeepAspectRatio == TextureHandling.ResizeElement){
 			VirtualRegionOnScreen.width = ScreenConfig.Instance.TargetScreenWidth;//Screen.width;
 			VirtualRegionOnScreen.height = ScreenConfig.Instance.TargetScreenHeight;//Screen.height;
 		}
-		UpdateActiveScreen();
 		originalVirtualRegionOnScreen = VirtualRegionOnScreen;
 		
-		initDirectChildren();
+		
+		created = true;
 		
 	}
 	
-	public void UpdateActiveScreen(){
+
+	protected void initActiveScreen(){
 		activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
 	}
-	public void UpdateParent(){
+	
+	protected void initParent(){
 		if(gameObject.transform.parent == null)
 			parent = this;
 		else
 			parent = gameObject.transform.parent.GetComponent<Frame>() as Frame;
 	}
 
-	void Start() {
-		StartOverride();
-	}
 	
-	protected virtual void StartOverride(){
-		Visibility = true;
-	}
+	#endregion init
 	
+	#region Update
 	// Update is called once per frame
 	void Update() {
 		UpdateOverride();
 	}
 
 	protected virtual void UpdateOverride() {
+		if(!created)
+			return;
+		
 		if(firstUpdateFlag){
 			firstUpdateFlag = false;
 			firstUpdate();
@@ -134,133 +175,156 @@ public class Frame : MonoBehaviour
 		
 	}
 	
-	
 	protected virtual void firstUpdate(){
-		// nothing here
+	
 	}
+	
+	
+	public virtual void UpdateElement(bool updateChildren = true){
+		if(!created){
+			EditorDebug.LogError("Cannot Update not Created Element: "  + gameObject.name);
+			return;
+		}
+			
+		calculateVirtualRegionOnScreen();
+		calculateRealRegionOnScreen();
+		calculateVisibility();	
+		
+		// Update all direct Children
+		if(updateChildren){
+			foreach (var frame in DirectChildren){
+				frame.UpdateElement();
+			}			
+		}
+		
 
 		
-	/**
-	 * This Function is called by Parent to force the child to arrange them selves 
-	 **/
-	public virtual void LayoutElement() {
-		
-		
-		//do positioning etc. for this class here
+	
 	}
+	
+	protected void calculateRealRegionOnScreen(){
+		// Get RealRegion
+		this.RealRegionOnScreen = activeScreen.GetPhysicalRegionFromRect(this.VirtualRegionOnScreen, KeepAspectRatio);
+			
+		//Check for Flaoting
+		var position = GetFloatingPosition();
+		this.RealRegionOnScreen = new Rect(position.x, position.y, RealRegionOnScreen.width, RealRegionOnScreen.height);
+		
+		// Move Parent Offset
+		position = new Vector2(parent.RealRegionOnScreen.x + this.RealRegionOnScreen.x, parent.RealRegionOnScreen.y + this.RealRegionOnScreen.y);
+		this.RealRegionOnScreen = new Rect(position.x, position.y, RealRegionOnScreen.width, RealRegionOnScreen.height);
+	}
+	
+	protected void calculateVisibility(){
+		if(!parent.Visibility && !inheritedVisibility){
+			savedVisibility = this.Visibility;
+			this.Visibility = false;
+			inheritedVisibility = true;
+		}
+		if(parent.Visibility && inheritedVisibility){
+			this.Visibility = savedVisibility;
+			inheritedVisibility = false;
+		}
+			
+	}
+	
+	protected virtual void calculateVirtualRegionOnScreen(){
+		
+	}
+	#endregion
 
+
+	#region LayoutElement	
+	public void ResetTransformation(){
+		this.transform.rotation = Quaternion.identity;
+		this.transform.localRotation = Quaternion.identity;
+		this.transform.localPosition = Vector3.zero;
+		this.transform.localScale = Vector3.one;
+	}
+	public Vector3 WorldToLocalCoordinates(Vector3 worldCoordinates){
+		return gameObject.transform.InverseTransformPoint(worldCoordinates);
+	}
+	#endregion
+	
+	#region EventHandling 
+	
 	public virtual void OnClick(object sender, MouseEventArgs e) {
-		
-		callHandler(ib => { ib.Click(e); }, action => { action.OnClick(sender, e); });
+		e.ElementIsActive = InputEvents.Instance.IsActiveElement(this);
+		callHandler(ib => { ib.Click(e); }, action => { action.OnClick(sender, e); });	
+		InputEvents.Instance.DeregisterActiveElement(this);
+			
 	}
 
 	public virtual void OnHover(object sender, MouseEventArgs e) {
-		callHandler(ib => { ib.Hover(e); }, action => { action.OnHover(sender, e); });
+		e.ElementIsActive = InputEvents.Instance.IsActiveElement(this);
+		callHandler(ib => { ib.Hover(e); }, action => { action.OnHover(sender, e); });			
+		
+
 	}
 
 	public virtual void OnDown(object sender, MouseEventArgs e) {
-		callHandler(ib => { ib.Down(e); }, action => { action.OnDown(sender, e); });
+		InputEvents.Instance.RegisterActiveElement(this);
+		e.ElementIsActive = InputEvents.Instance.IsActiveElement(this);
+		callHandler(ib => { ib.Down(e); }, action => { action.OnDown(sender, e); });	
+		
+		
 	}
 
 	public virtual void OnUp(object sender, MouseEventArgs e) {
+		e.ElementIsActive = InputEvents.Instance.IsActiveElement(this);
 		callHandler(ib => { ib.Up(e); }, action => { action.OnUp(sender, e); });
+		
 	}
 
 	public virtual void OnMove(object sender, MouseEventArgs e) {
+		e.ElementIsActive = InputEvents.Instance.IsActiveElement(this);
 		callHandler(ib => { ib.Move(e); }, action => { action.OnMove(sender, e); });
+		
+		
 	}
 
-	public virtual void OnSwipe(object sender, MouseEventArgs e) {
+	public virtual void OnSwipe(object sender, MouseEventArgs e){
+		e.ElementIsActive = InputEvents.Instance.IsActiveElement(this);
 		callHandler(ib => { ib.Swipe(e); }, action => { action.OnSwipe(sender, e); });
+		InputEvents.Instance.DeregisterActiveElement(this);	
 	}
 
 	protected virtual void callHandler(InteractionEvent interaction, ActionEvent action) {
-		foreach (Frame b in DirectChildren) {
-			if(b == null)
+		if(!created)
+			return;
+		
+		// Call all InteractionBehaviours for this Object
+		var behaviours = gameObject.GetComponents<InteractionBehaviour>() as InteractionBehaviour[];
+		if (behaviours != null) {
+			foreach (var ib in behaviours) {
+				interaction(ib);
+			}	
+		}
+		
+		// We dont use this to block eventPropagation because Propagation is based on GUILevel not on
+		// Parent Child Hirarchy
+		foreach (Frame frame in DirectChildren) {
+			if(frame == null)
 				continue;
-			if (b.checkMouseOverElement()) {
+			if (frame.CheckMouseOverElement()){
+				// Call OnClick, OnHover etc on all Children
 				if (action != null) {
-					action(b);					
-				}
-				var behaviours = b.GetComponents<InteractionBehaviour>() as InteractionBehaviour[];
-				if (behaviours != null) {
-					foreach (var ib in behaviours) {
-						interaction(ib);
-					}	
+					action(frame);					
 				}
 			} else {
-				b.resetElement();
+				frame.ResetElement();
 			}
 		}
 	}
 	
-	public virtual bool checkMouseOverElement(){
+	#endregion
+	
+	public virtual bool CheckMouseOverElement(){
 		return true;
 	}
 	
-	public void UpdateDirectChildren() {
-		initDirectChildren();
-	}
 	
-	public virtual void UpdateElement(){
-		
-		//base.UpdateElement();
-		
-		//EditorDebug.LogWarning("Update Element: " + gameObject.name);
-		UpdateDirectChildren();
-		UpdateParent();
-		//activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
-		
-		// Get RealRegion
-		if(activeScreen != null)
-			this.RealRegionOnScreen = activeScreen.GetPhysicalRegionFromRect(this.VirtualRegionOnScreen, KeepAspectRatio);
-		
-		
-		
-			
-		//Check for Flaoting
-		//this.RealRegionOnScreen = this.RealRegionOnScreen.AddPosition(GetFloatingPosition());
-		var position = GetFloatingPosition();
-		this.RealRegionOnScreen = new Rect(position.x, position.y, RealRegionOnScreen.width, RealRegionOnScreen.height);
-		
-		
-		// Move Parent Offset
-	
-		position = new Vector2(parent.RealRegionOnScreen.x + this.RealRegionOnScreen.x, parent.RealRegionOnScreen.y + this.RealRegionOnScreen.y);
-		this.RealRegionOnScreen = new Rect(position.x, position.y, RealRegionOnScreen.width, RealRegionOnScreen.height);
-		
-		
-		UpdateRegionOnScreen();
-		
-		
-	
-		updateVisibiltyAfterParent();	
-		
-		foreach (var frame in DirectChildren){
-			frame.UpdateElement();
-		}	
-		
-		/*UpdateDirectChildren();
-		foreach (Panel panel in directChildren){
-			panel.UpdateElement();
-		}*/	
-	}
-	
-	protected void updateVisibiltyAfterParent(){
-		if(!parent.Visibility){
-			savedVisibility = this.Visibility;
-			this.Visibility = false;
-			inheritedVisibility = true;
-			EditorDebug.Log("Save VIs: " + savedVisibility + " " + gameObject.name);
-		}
-		if(parent.Visibility && inheritedVisibility){
-			EditorDebug.Log("Load VIs: " + savedVisibility + " " + gameObject.name);
-			this.Visibility = savedVisibility;
-			
-		}
-			
-	}
-	public void removeFloat(){
+	public void RemoveFloat(){
 		var realPosition = new Vector2(this.RealRegionOnScreen.x, this.RealRegionOnScreen.y);
 		this.Position = CameraScreen.PhysicalToVirtualScreenPosition(realPosition);
 		this.horizontalFloat = Frame.HorizontalFloatPositions.none;
@@ -268,9 +332,7 @@ public class Frame : MonoBehaviour
 		
 	}
 	
-	public virtual void UpdateRegionOnScreen(){
-		
-	}
+	
 	
 	public Vector2 GetFloatingPosition(){
 		var ret = new Vector2(0,0);
@@ -324,38 +386,29 @@ public class Frame : MonoBehaviour
 		}
 		return ret;
 	}
-	public virtual void CreateElement(){
-		if(created){
-			EditorDebug.Log("Element: "+ gameObject.name + "already created");
-			return;
-		}
-		
-		if(activeScreen == null)
-			activeScreen = CameraScreen.GetScreenForObject(this.gameObject);
-		RealRegionOnScreen = new Rect(0,0,0,0);
-		UpdateDirectChildren();
-		UpdateElement();
-		foreach (var frame in DirectChildren){
-			frame.CreateElement();
-		}
-		created = true;
-		
-			
+	
+	public virtual void ResetElement(){
 		
 	}
 	
-	public virtual void resetElement(){
-		
+	
+	public static int CompareFramesByIndex(Frame x, Frame y){
+		if(x.ListIndex > y.ListIndex){
+			return 1;
+		} else if(x.ListIndex == y.ListIndex){
+			return 0;
+		} else {
+			return -1;
+		}
 	}
 	
-	private void initDirectChildren() {
-		DirectChildren = new List<Frame>();
-		foreach (Transform child in transform) {
-			var b = child.GetComponent<Frame>();
-			if (b != null){
-				DirectChildren.Add(b);
-			}
-				
+	public static int CompareFramesByGUIDepth(Frame x, Frame y){
+		if(x.GUIDepth > y.GUIDepth){
+			return 1;
+		} else if(x.GUIDepth == y.GUIDepth){
+			return 0;
+		} else {
+			return -1;
 		}
 	}
 }

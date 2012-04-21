@@ -4,12 +4,14 @@ using System;
 
 public class Slider : Control {
 
+	public event EventHandler<SliderEventArgs> SliderValueChanged;
 	
 	public float SliderValue{
 		get{
 			return currentSliderValue;
 		}
 		set{
+			lastSliderValue = currentSliderValue;
 			if(value > MaxValue){
 				EditorDebug.LogWarning("Slidervalue: " + value + " is out of Range on Object: " + gameObject.name + " value is set to max");
 				currentSliderValue = MaxValue;
@@ -20,6 +22,8 @@ public class Slider : Control {
 				currentSliderValue = value;
 			
 			UpdateElement();
+			
+			InvokeSliderValueChanged();
 		}
 	}
 	
@@ -38,6 +42,7 @@ public class Slider : Control {
 	public float sliderValueRange{get;private set;}
 	public float currentSliderPosition{get;private set;}
 	private float currentSliderValue;
+	private float lastSliderValue;
 
 	
 	protected override void AwakeOverride (){
@@ -56,7 +61,7 @@ public class Slider : Control {
 		if(SliderHandle == null)
 			EditorDebug.LogError("Slider Handle not set on: " + gameObject.name);
 		else{
-			SliderHandle.removeFloat();	
+			SliderHandle.RemoveFloat();	
 			SliderHandle.SliderElement = this;
 		}
 		
@@ -91,18 +96,44 @@ public class Slider : Control {
 		SliderHandle.OnUp(sender, e);
 	}*/
 	
-	public override void UpdateElement (){
+	public override void UpdateElement (bool updateChildren = true){
 		updateSliderPosition();
-		base.UpdateElement ();
+		base.UpdateElement (updateChildren);
+	}
+	
+	protected override void firstUpdate (){
+		base.firstUpdate ();
+		
 	}
 	
 	private void updateSliderPosition(){
 		var offset = (currentSliderValue*sliderLength) /  sliderValueRange;
+		
+		var flag = SliderMaxPosition - SliderMinPosition < 0;
+		if(flag)
+			offset *= -1;
+		//EditorDebug.Log("Offset: " + offset);
 		currentSliderPosition = SliderMinPosition + offset;
-		if(Orientation == ElementOrientation.horizontal)
-			SliderHandle.VirtualRegionOnScreen.x = currentSliderPosition - SliderHandle.VirtualRegionOnScreen.width/2;
-		else
-			SliderHandle.VirtualRegionOnScreen.y = currentSliderPosition - SliderHandle.VirtualRegionOnScreen.height/2;
+		if(Orientation == ElementOrientation.horizontal){
+			var value = currentSliderPosition - SliderHandle.VirtualRegionOnScreen.width/2;
+			SliderHandle.VirtualRegionOnScreen = new Rect(value, SliderHandle.VirtualRegionOnScreen.y, SliderHandle.VirtualRegionOnScreen.width, SliderHandle.VirtualRegionOnScreen.height);
+		}
+		else{
+			var value = currentSliderPosition - SliderHandle.VirtualRegionOnScreen.height/2;
+			SliderHandle.VirtualRegionOnScreen = new Rect(SliderHandle.VirtualRegionOnScreen.x,value, SliderHandle.VirtualRegionOnScreen.width, SliderHandle.VirtualRegionOnScreen.height);
+			//SliderHandle.VirtualRegionOnScreen.y = currentSliderPosition - SliderHandle.VirtualRegionOnScreen.height/2;
+		}
+			
 		SliderHandle.UpdateElement();
+	}
+	
+	private void InvokeSliderValueChanged(){
+		var handler = SliderValueChanged;
+		if (handler == null) {
+			return;
+		}
+
+		var e = new SliderEventArgs(lastSliderValue, SliderValue);
+		SliderValueChanged(this, e);
 	}
 }

@@ -20,30 +20,47 @@ public class UVMoveBehaviour : MonoBehaviour {
 	protected Texture mainTexture;
 	
 	private Rect currentUvs;
+	protected GameObject element;
 	private MeshFilter meshFilter;
 	private List<Vector2> originalUVs;
 	private bool disabled = true;
+	private bool firstUpdateFlag = true;
 	
 	void Start(){
 		StartOverride();
 	}
 	
 	protected virtual void StartOverride(){
-		if(mainTexture == null)
-			initMainTexture();
+		
 	}
+	
+	
 	void Awake(){
 		AwakeOverride();
 	}
 	
-	protected virtual void AwakeOverride(){
-		
+	protected virtual void firstUpdate(){
+		firstUpdateFlag = false;
+		if(element == null)
+			element = gameObject;
 		newUvs = new Rect(0,0,0,0);
 		disabled = false;
 		loadMesh();
 		initMainTexture();
 		if(!disabled)
 			storeUvs();
+		
+	}
+	protected virtual void AwakeOverride(){
+	}
+	
+	void Update(){
+		updateOverride();
+	}
+	
+	protected virtual void updateOverride(){
+		if(firstUpdateFlag)
+			firstUpdate();
 	}
 	
 	private void initMainTexture(){
@@ -63,9 +80,9 @@ public class UVMoveBehaviour : MonoBehaviour {
 		
 	}
 	private void loadMesh(){
-		meshFilter = gameObject.GetComponent<MeshFilter>() as MeshFilter;
+		meshFilter = element.GetComponent<MeshFilter>() as MeshFilter;
 		if(meshFilter == null){
-			meshFilter = gameObject.GetComponentInChildren<MeshFilter>() as MeshFilter;
+			meshFilter = element.GetComponentInChildren<MeshFilter>() as MeshFilter;
 		}
 		if(meshFilter == null){
 			EditorDebug.LogError("No Meshfound for UVMoveBehaviour on Object: " + gameObject.name);

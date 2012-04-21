@@ -37,10 +37,7 @@ public class TextPanel : Panel {
 		formatMultilineText();
 		lastRenderdText = Text;
 	}
-	public override void LayoutElement(){
-		base.LayoutElement();
-		
-	}
+
 	
 	void OnGUI(){
 		OnGUIOverride();

@@ -3,7 +3,12 @@ using System.Collections;
 
 public class DropDownElementBehaviour : InteractionBehaviour {
 
+	public bool Activate{
+		get;
+		set;
+	}
 	private DropDownMenu containingDropDownElement;
+	
 	private Frame frame;
 	public string Identifier;
 
@@ -14,6 +19,7 @@ public class DropDownElementBehaviour : InteractionBehaviour {
 		initGUIElement();
 		if(Identifier == string.Empty)
 			Identifier = gameObject.name;
+		Activate = true;
 	}
 	
 	private void initGUIElement(){
@@ -46,7 +52,9 @@ public class DropDownElementBehaviour : InteractionBehaviour {
 	
 	
 	public override void Click (MouseEventArgs mouse){
-		EditorDebug.Log("DropDownElement clicked");
+		if(!Activate)
+			return;
+		EditorDebug.LogError("DropDownElement clicked: " + Identifier);
 		base.Click (mouse);
 		if(containingDropDownElement == null){
 			initDropDownElement();
@@ -60,4 +68,6 @@ public class DropDownElementBehaviour : InteractionBehaviour {
 		containingDropDownElement.ToggleContentVisibility();
 			
 	}
+	
+	
 }

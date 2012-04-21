@@ -4,9 +4,15 @@ using System.Collections;
 public class Control : Panel {
 
 	// Show Active Region is an EditorDebug Option that makes the active array visible
+	public Text Label;
 	public bool ShowActiveRegion = false;
 	public Rect ActiveRegion;
+	public bool ReadOnly = false;
+	public Rect ReadOnlyUV;
 	protected Rect realActiveRegion;
+	protected bool down = false;
+	
+	
 	
 	void Awake(){
 		AwakeOverride();
@@ -20,10 +26,6 @@ public class Control : Panel {
 		
 	}
 	
-	public override void createGUIElement(){
-		base.createGUIElement();
-	}
-	
 	void OnGUI(){
 #if UNITY_EDITOR
 		if(ShowActiveRegion){
@@ -33,27 +35,46 @@ public class Control : Panel {
 #endif 
 	}
 	
+	public override void ResetElement (){
+		base.ResetElement();
+		if(Label != null)
+			Label.IsActive = false;
+		if(ReadOnly && plane != null)
+			plane.UV = ReadOnlyUV;	
+	}
+	
 	public override void CreateElement (){
-		base.CreateElement ();
+		base.CreateElement();
 		initActiveRegion();
 	}
-	public override bool checkMouseOverElement(){
+	public override bool CheckMouseOverElement(){
 		if(ShowActiveRegion)
 			initActiveRegion();
-		if(!this.Visibility)
+		if(!this.Visibility && this.ReadOnly)
 			return false;
 		
-		//Rect t = new Rect(VirtualRegionOnScreen.x+ ActiveRegion.x, 
-	//	                          VirtualRegionOnScreen.y + ActiveRegion.y, ActiveRegion.width, ActiveRegion.height);
-		
+	
 		return CameraScreen.CursorInsidePhysicalRegion(realActiveRegion);
 	}
 	
-	public override void UpdateElement(){
-		base.UpdateElement();
+	#region Update
+	
+	public override void UpdateElement(bool updateChildren = true){
+		base.UpdateElement(updateChildren);
 		initActiveRegion();
+		ResetElement();
 		
 	}
+	
+	protected override void firstUpdate (){
+		base.firstUpdate ();
+		if(ReadOnly && plane != null){
+			plane.UV = ReadOnlyUV;	
+		}
+			
+	}
+	
+	#endregion Update
 	// Caclulate the Absolute Values on the physical screen - because ActiveRegion is virtual an relative to the Control Position
 
 	private void initActiveRegion(){
@@ -63,11 +84,40 @@ public class Control : Panel {
 		}
 		var activeRegion = activeScreen.GetPhysicalRegionFromRect(ActiveRegion, KeepAspectRatio);
 		realActiveRegion = new Rect(RealRegionOnScreen.x + activeRegion.x , RealRegionOnScreen.y + activeRegion.y, activeRegion.width, activeRegion.height);
-		/*realActiveRegion = new Rect(VirtualRegionOnScreen.x+ ActiveRegion.x, 
-		                            VirtualRegionOnScreen.y + ActiveRegion.y, ActiveRegion.width, ActiveRegion.height);
-		realActiveRegion = activeScreen.GetPhysicalRegionFromRect(realActiveRegion);
-		var position = activeScreen.GetFloatingPosition();
-		realActiveRegion = new Rect(position.x, position.y, RealRegionOnScreen.width, RealRegionOnScreen.height);*/
 	}
+	
+	#region Event Handler 
+	
+
+	public override void OnHover (object sender, MouseEventArgs e){
+		base.OnHover (sender, e);
+		if(ReadOnly)
+			return;
+		if(Label != null && ( !InputEvents.Instance.GetIsDown(0) || down) ){
+			Label.IsActive = true;
+		}
+			
+	}
+	public override void OnDown(object sender, MouseEventArgs e){
+		base.OnDown(sender,e);
+		if(ReadOnly)
+			return;
+		down = true;
+		if(Label != null){
+			Label.IsActive = true;	
+		}
+			
+	}
+	
+	public override void OnUp(object sender, MouseEventArgs e){
+		base.OnUp(sender,e);
+		if(ReadOnly)
+			return;
+		down = false;
+		if(Label != null)
+			Label.IsActive = false;
+	}
+	
+	#endregion EventHandler
 
 }

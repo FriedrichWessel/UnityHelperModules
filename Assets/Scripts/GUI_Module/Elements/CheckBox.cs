@@ -2,13 +2,12 @@ using UnityEngine;
 using System.Collections;
 using System;
 
-public class CheckBox : Control {
+public class CheckBox : Button {
 
-	public Rect ActiveUV; 
-	public Rect HoverUV;
-	
+
 	public event EventHandler<CheckBoxEventArgs> CheckboxStatusChanged;
-		
+	public bool DefaultValue = false;
+	
 	public bool Checked{
 		get{
 			return checkedFlag;
@@ -16,12 +15,18 @@ public class CheckBox : Control {
 		
 		set{
 			checkedFlag = value;
-			if(!checkedFlag)
-				resetElement();
-			else{
-				if(plane != null)
-					plane.UV = ActiveUV;
+			if(!checkedFlag){
+				ConstantActive = false;
+				ResetElement();
 			}
+				
+			else{
+				ConstantActive = true;
+				if(Label != null)
+					Label.IsActive = true;
+				UpdateElement();
+			}
+			InvokeCheckboxStatusChanged();	
 		}
 	}
 	
@@ -29,22 +34,31 @@ public class CheckBox : Control {
 	
 	protected override void AwakeOverride (){
 		base.AwakeOverride ();
-		Checked = false;
+		Checked = DefaultValue;
 	}
 	
 	
 	public override void OnClick (object sender, MouseEventArgs e){
+		if(ReadOnly){
+			base.OnClick (sender, e);
+			return;
+		}
+			
+		if(InputEvents.Instance.IsActiveElement(this)){
+			Checked = !Checked;	
+			ConstantActive = Checked;
+			
+		}
 		base.OnClick (sender, e);
-		Checked = !Checked;	
-		InvokeCheckboxStatusChanged();
+		
+		
 	}
-
 	
-	public override void resetElement (){
-		if(!checkedFlag)
-			base.resetElement ();
-		
-		
+	public override void ResetElement (){
+		base.ResetElement();
+		if(checkedFlag && Label != null){
+			Label.IsActive = true;
+		}	
 	}
 	
 	private void InvokeCheckboxStatusChanged(){

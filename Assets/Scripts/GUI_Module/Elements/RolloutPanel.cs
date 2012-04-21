@@ -6,6 +6,12 @@ public class RolloutPanel : HVPanel {
 	
 	public float RolloutTime = 1.0f;
 	
+	/*public Panel TopPart;
+	// Middle Part is to strech - so match the needed length
+	public Panel MiddlePart;
+	// bottom Part is placed under the scaled middle Part
+	public Panel BottomPart;*/
+	
 	public void Show(){
 		Show(RolloutTime);
 	}

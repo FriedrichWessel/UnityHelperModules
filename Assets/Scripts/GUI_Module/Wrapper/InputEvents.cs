@@ -4,10 +4,6 @@ using System;
 using System.Collections.Generic;
 
 public class InputEvents : MonoBehaviour{
-
-	
-	//public float ClickTimeInSeconds = 0.1f;
-	//public float MaxClickDistance = 0.1f;
 	
 	public static InputEvents Instance;
 	
@@ -17,6 +13,8 @@ public class InputEvents : MonoBehaviour{
 	public event EventHandler<MouseEventArgs> MoveEvent;
 	public event EventHandler<MouseEventArgs> SwipeEvent;
 	
+	private List<Frame> activeElements;
+	
 	//private Timer clickTimer;
 	private Dictionary<int,bool> clickStarted;
 	private Dictionary<int,double> clickStartTime;
@@ -24,7 +22,6 @@ public class InputEvents : MonoBehaviour{
 	
 	private Vector2 mousePosition;
 	private Vector2 actualMouseDirection;
-	private bool mouseDownToggle = true;
 	
 	void Awake(){
 		Instance = this;
@@ -33,6 +30,7 @@ public class InputEvents : MonoBehaviour{
 		actualMouseDirection = new Vector2(0,0);
 		mousePosition = new Vector2(0,0);
 		mouseStartPosition = new Vector2(0,0);
+		activeElements = new List<Frame>();
 		
 	}
 	
@@ -69,13 +67,6 @@ public class InputEvents : MonoBehaviour{
 			return;
 		}
 			
-		/*if(Input.GetMouseButtonDown(0)){
-			EditorDebug.LogError("Button0 Down");
-			clickStart(0);
-		} else if(getIsDown(0) && (Input.GetMouseButtonUp(0) || !Input.GetMouseButtonDown(0)) ){
-			EditorDebug.LogError("Button0 Up");
-			clickEnd(0);
-		}*/
 		// Diese unglaublichen If abfragen sind nötig, da sich die Unity mit windows Touch anders verhält als
 		// mit der Maus oder anderen Touchdevices
 		// Unter windows gilt folgendes: Bei FingerDown sind sowohl down und Up der Mouse False
@@ -125,9 +116,7 @@ public class InputEvents : MonoBehaviour{
 	}
 	
 	private void clickStart(int buttonId){
-		//EditorDebug.LogError("ClickStart");
 		InvokeDownEvent(buttonId);
-		//clickTimer.StartTimer(ClickTimeInSeconds);
 		mouseStartPosition = mousePosition;
 		setIsDown(buttonId, true);
 		setButtonDownTime(buttonId, Time.timeSinceLevelLoad);
@@ -140,7 +129,7 @@ public class InputEvents : MonoBehaviour{
 			clickStarted.Add(key, value);
 	}
 	
-	private bool getIsDown(int key){
+	public bool GetIsDown(int key){
 		if(clickStarted.ContainsKey(key)){
 			return clickStarted[key];
 		}
@@ -163,9 +152,8 @@ public class InputEvents : MonoBehaviour{
 	
 	
 	private void clickEnd(int buttonId){
-		//EditorDebug.LogError("ClickEnd");
 		InvokeUpEvent(buttonId);
-		if(getIsDown(buttonId)){
+		if(GetIsDown(buttonId)){
 			Vector2 moveDirection = mousePosition - mouseStartPosition;
 			float clickDistance = moveDirection.magnitude;
 			if(clickDistance <= ScreenConfig.Instance.SwipeMinDistance || getButtonDownTime(buttonId) < (ScreenConfig.Instance.SwipeMinTime*Time.timeScale)){
@@ -179,6 +167,62 @@ public class InputEvents : MonoBehaviour{
 		}
 	}
 	
+	public void RegisterActiveElement(Frame element){
+		activeElements = insertActiveElement(activeElements, element);
+	}
+	
+	public void DeregisterActiveElement(Frame element){
+		var tmpList = new List<Frame>();
+		foreach(Frame f in activeElements){
+			if(f != element)
+				tmpList.Add(f);
+		}
+		activeElements = tmpList;
+	}
+	
+	public bool IsActiveElement(Frame element){
+		foreach(Frame f in activeElements){
+			if(f == element){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public bool ActiveElementIsEmpty(){
+		return activeElements.Count == 0;
+	}
+	
+	private List<Frame> insertActiveElement(List<Frame> list, Frame element){
+		var helperList = new List<Frame>();
+		bool inserted = false;
+		bool propagate = true;
+		
+		if(list.Count > 0){
+			list.Sort(Frame.CompareFramesByGUIDepth);
+			foreach(Frame frame in list){
+				if(!inserted && propagate && element.GUIDepth < frame.GUIDepth){
+					helperList.Add(element);
+					propagate = element.PropagateEvents;
+					inserted = true;
+				}
+				
+				if(!propagate)
+						break;
+				
+				helperList.Add(frame);
+				propagate = frame.PropagateEvents;
+					
+			}	
+		} 
+		
+		if(!inserted && propagate)
+			helperList.Add(element);
+		
+		return helperList;
+	}
+	
+	#region Invoke Events
 	
 	private void InvokeClickEvent(int buttonId){
 		var handler = ClickEvent;
@@ -186,6 +230,7 @@ public class InputEvents : MonoBehaviour{
 			return;
 		}
 		var e = new MouseEventArgs(buttonId);
+		e.MousPosition = mousePosition;
 		handler(this, e);
 	}
 	
@@ -195,6 +240,7 @@ public class InputEvents : MonoBehaviour{
 			return;
 		}
 		var e = new MouseEventArgs(buttonId);
+		e.MousPosition = mousePosition;
 		handler(this, e);
 	}
 	
@@ -204,6 +250,7 @@ public class InputEvents : MonoBehaviour{
 			return;
 		}
 		var e = new MouseEventArgs(buttonId);
+		e.MousPosition = mousePosition;
 		handler(this, e);
 	}
 
@@ -227,5 +274,7 @@ public class InputEvents : MonoBehaviour{
 		var e = new MouseEventArgs(direction);
 		handler(this, e);
 	}
+	
+	#endregion 
 	
 }
